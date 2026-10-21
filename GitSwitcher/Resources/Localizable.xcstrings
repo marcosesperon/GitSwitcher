@@ -11,6 +11,16 @@
         }
       }
     },
+    "A new version of GitSwitcher is available": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hay una versión nueva de GitSwitcher"
+          }
+        }
+      }
+    },
     "A short name to show in the menu bar instead of the GitHub username.": {
       "localizations": {
         "es": {
@@ -61,6 +71,36 @@
         }
       }
     },
+    "Check for Updates…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar actualizaciones…"
+          }
+        }
+      }
+    },
+    "Check for updates automatically": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar actualizaciones automáticamente"
+          }
+        }
+      }
+    },
+    "Close": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerrar"
+          }
+        }
+      }
+    },
     "Commit author (optional)": {
       "localizations": {
         "es": {
@@ -77,6 +117,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Copiar"
+          }
+        }
+      }
+    },
+    "Couldn't check for updates": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se han podido buscar actualizaciones"
+          }
+        }
+      }
+    },
+    "Couldn't replace the app: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha podido sustituir la app: %@"
           }
         }
       }
@@ -113,6 +173,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hecho"
+          }
+        }
+      }
+    },
+    "Downloading…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descargando…"
           }
         }
       }
@@ -187,6 +257,56 @@
         }
       }
     },
+    "GitHub answered with an error (%lld).": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub ha respondido con un error (%lld)."
+          }
+        }
+      }
+    },
+    "GitHub didn't publish a checksum for the download, so it can't be verified.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub no ha publicado la huella de la descarga, así que no se puede verificar."
+          }
+        }
+      }
+    },
+    "GitHub is limiting requests right now. Try again in a while.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub está limitando las consultas ahora mismo. Inténtalo dentro de un rato."
+          }
+        }
+      }
+    },
+    "GitHub returned something GitSwitcher didn't understand.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub ha devuelto algo que GitSwitcher no entiende."
+          }
+        }
+      }
+    },
+    "GitSwitcher %@ is the latest version.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitSwitcher %@ es la última versión."
+          }
+        }
+      }
+    },
     "GitSwitcher Settings": {
       "localizations": {
         "es": {
@@ -197,12 +317,32 @@
         }
       }
     },
+    "GitSwitcher can't write to %@. Update it from GitHub instead.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitSwitcher no puede escribir en %@. Actualízala desde GitHub."
+          }
+        }
+      }
+    },
     "GitSwitcher uses the GitHub CLI (gh) to know your accounts and to switch between them.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "GitSwitcher usa GitHub CLI (gh) para conocer tus cuentas y cambiar entre ellas."
+          }
+        }
+      }
+    },
+    "GitSwitcher was installed with Homebrew, so Homebrew updates it. Open GitSwitcher again when it finishes.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitSwitcher se instaló con Homebrew, así que la actualiza Homebrew. Vuelve a abrir GitSwitcher cuando termine."
           }
         }
       }
@@ -223,6 +363,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Instalar GitHub CLI"
+          }
+        }
+      }
+    },
+    "Install and Relaunch": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar y reiniciar"
+          }
+        }
+      }
+    },
+    "Installing…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalando…"
           }
         }
       }
@@ -283,6 +443,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "No hay cuentas de GitHub con sesión iniciada en gh"
+          }
+        }
+      }
+    },
+    "No release notes.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin notas de la versión."
+          }
+        }
+      }
+    },
+    "No versions have been published yet.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todavía no se ha publicado ninguna versión."
+          }
+        }
+      }
+    },
+    "Not Now": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ahora no"
+          }
+        }
+      }
+    },
+    "Once a day, GitSwitcher asks GitHub for the latest version. No personal data is sent.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una vez al día, GitSwitcher pregunta a GitHub por la última versión. No se envía ningún dato personal."
           }
         }
       }
@@ -427,6 +627,16 @@
         }
       }
     },
+    "Software Update": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualización de software"
+          }
+        }
+      }
+    },
     "Switching accounts doesn't change who signs your commits. GitSwitcher can change the global git author for you, or you can set it per folder with includeIf in ~/.gitconfig.": {
       "localizations": {
         "es": {
@@ -437,12 +647,158 @@
         }
       }
     },
+    "The download doesn't match the published file. Nothing was changed.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La descarga no coincide con el fichero publicado. No se ha cambiado nada."
+          }
+        }
+      }
+    },
+    "The download failed: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La descarga ha fallado: %@"
+          }
+        }
+      }
+    },
+    "The downloaded app isn't the expected one: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La app descargada no es la esperada: %@"
+          }
+        }
+      }
+    },
+    "The downloaded app's code signature is broken.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La firma de la app descargada está dañada."
+          }
+        }
+      }
+    },
+    "The downloaded file doesn't contain GitSwitcher.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El fichero descargado no contiene GitSwitcher."
+          }
+        }
+      }
+    },
     "The new account will show up here when you finish.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "La cuenta nueva aparecerá aquí al terminar."
+          }
+        }
+      }
+    },
+    "This version has no download for GitSwitcher.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta versión no tiene descarga de GitSwitcher."
+          }
+        }
+      }
+    },
+    "Update Available: %@…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualización disponible: %@…"
+          }
+        }
+      }
+    },
+    "Update with Homebrew": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizar con Homebrew"
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión"
+          }
+        }
+      }
+    },
+    "Version %@ is ready. You have %@.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La versión %1$@ está lista. Tienes la %2$@."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %1$@ is ready. You have %2$@."
+          }
+        }
+      }
+    },
+    "View on GitHub": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ver en GitHub"
+          }
+        }
+      }
+    },
+    "What's new": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Novedades"
+          }
+        }
+      }
+    },
+    "You're up to date": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya tienes la última versión"
+          }
+        }
+      }
+    },
+    "You're up to date.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya tienes la última versión."
           }
         }
       }
@@ -519,6 +875,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "cambiando…"
+          }
+        }
+      }
+    },
+    "version %@ instead of %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "versión %1$@ en lugar de %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "version %1$@ instead of %2$@"
           }
         }
       }

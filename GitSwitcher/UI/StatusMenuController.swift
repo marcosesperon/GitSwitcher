@@ -9,13 +9,22 @@ import Observation
 @MainActor
 final class StatusMenuController: NSObject, NSMenuDelegate {
     private let store: AccountsStore
+    private let updates: UpdateStore
+    private let showUpdateWindow: () -> Void
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let menu = NSMenu()
     private let openSettings: (SettingsTab?) -> Void
 
-    init(store: AccountsStore, openSettings: @escaping (SettingsTab?) -> Void) {
+    init(
+        store: AccountsStore,
+        updates: UpdateStore,
+        openSettings: @escaping (SettingsTab?) -> Void,
+        showUpdateWindow: @escaping () -> Void
+    ) {
         self.store = store
+        self.updates = updates
         self.openSettings = openSettings
+        self.showUpdateWindow = showUpdateWindow
         super.init()
 
         menu.delegate = self
@@ -60,13 +69,28 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         }
 
         let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "GitSwitcher")
-        image?.isTemplate = true
-        button.image = image
+        // Si hay versión nueva, el icono lleva un puntito.
+        button.image = updates.availableRelease == nil ? image : image.map(withUpdateDot)
+        button.image?.isTemplate = true
         // Un espacio delante para que el texto no quede pegado al icono.
         button.title = title.isEmpty ? "" : " " + title
         button.toolTip = store.activeAccount.map {
             String(localized: "GitHub account: \($0.login)")
         } ?? "GitSwitcher"
+    }
+
+    /// Dibuja el icono con un puntito arriba a la derecha (aviso de versión
+    /// nueva). Sigue siendo «plantilla», así que macOS lo pinta del color de la
+    /// barra como el resto de iconos.
+    private func withUpdateDot(_ symbol: NSImage) -> NSImage {
+        let size = NSSize(width: symbol.size.width + 3, height: symbol.size.height)
+        return NSImage(size: size, flipped: false) { rect in
+            symbol.draw(in: NSRect(origin: .zero, size: symbol.size))
+            let dot = NSRect(x: rect.maxX - 6, y: rect.maxY - 6, width: 6, height: 6)
+            NSColor.black.setFill()
+            NSBezierPath(ovalIn: dot).fill()
+            return true
+        }
     }
 
     // MARK: - El menú
@@ -84,6 +108,14 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
 
     private func rebuildMenu() {
         menu.removeAllItems()
+
+        if let release = updates.availableRelease {
+            menu.addItem(actionItem(
+                String(localized: "Update Available: \(release.version.description)…"),
+                action: #selector(openUpdate)
+            ))
+            menu.addItem(.separator())
+        }
 
         switch store.status {
         case .loading:
@@ -115,6 +147,7 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         }
 
         menu.addItem(.separator())
+        menu.addItem(actionItem(String(localized: "Check for Updates…"), action: #selector(checkForUpdates)))
         menu.addItem(actionItem(String(localized: "Settings…"), action: #selector(showSettings), key: ","))
         menu.addItem(.separator())
         menu.addItem(actionItem(String(localized: "Quit GitSwitcher"), action: #selector(quit), key: "q"))
@@ -164,6 +197,38 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
 
     @objc private func showGuide() {
         openSettings(.guide)
+    }
+
+    @objc private func openUpdate() {
+        showUpdateWindow()
+    }
+
+    /// Comprobación a mano: a diferencia de la automática, siempre responde algo
+    /// (hay versión, ya estás al día, o qué ha fallado).
+    @objc private func checkForUpdates() {
+        Task {
+            switch await updates.check() {
+            case .available:
+                showUpdateWindow()
+            case .upToDate:
+                showAlert(
+                    String(localized: "You're up to date"),
+                    String(localized: "GitSwitcher \(updates.currentVersion.description) is the latest version.")
+                )
+            case .failed(let message):
+                showAlert(String(localized: "Couldn't check for updates"), message)
+            case .idle, .checking:
+                break
+            }
+        }
+    }
+
+    private func showAlert(_ title: String, _ message: String) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        NSApp.activate()
+        alert.runModal()
     }
 
     @objc private func quit() {

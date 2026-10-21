@@ -578,3 +578,116 @@ README. Antes, revisión en local por el autor.
 - El interruptor «Abrir al iniciar sesión» de la captura General refleja el
   estado real del Mac donde se generan las capturas (no es dato personal; se
   comentó al autor por si prefiere fijarlo apagado).
+
+## 2026-10-21 — Control de versiones y actualización desde la app
+
+### 1. La petición tal como se ha entendido
+
+- **Comprobación:** consulta `GET /repos/marcosesperon/GitSwitcher/releases/latest`
+  (API pública, sin token ni datos del usuario) al arrancar y luego una vez al
+  día, si está activada la casilla «Buscar actualizaciones automáticamente» de
+  Ajustes › General (activada por defecto). Además, «Buscar actualizaciones…» en
+  el menú, que siempre funciona y dice «Ya tienes la última versión» si no hay
+  nada.
+- **Aviso:** si la versión publicada es mayor que la instalada, el icono de la
+  barra lleva un puntito y el menú empieza con «Actualización disponible:
+  X.Y.Z…».
+- **Ventana de actualización:** versión instalada → nueva, novedades (el texto de
+  la release en GitHub) y botones:
+  - **Instalación manual:** «Instalar y reiniciar». Descarga el `.zip`, comprueba
+    su SHA-256 con el que publica GitHub para ese fichero, comprueba que dentro hay
+    una GitSwitcher con el mismo identificador y versión esperada, sustituye la
+    app en su sitio y la vuelve a abrir. Si algo falla (sin permisos para escribir
+    en la carpeta, descarga corrupta…), no toca la app instalada, lo explica y
+    ofrece «Ver en GitHub».
+  - **Instalación con Homebrew** (detectada por el registro del cask): «Actualizar
+    con Homebrew», que abre Terminal con `brew upgrade --cask gitswitcher`.
+  - «Ver en GitHub» abre la página de la release; «Ahora no» cierra la ventana (el
+    aviso sigue en el menú hasta que se actualice).
+- Textos en inglés y español; README, web y documentación actualizados.
+
+**Confirmación:** confirmado por el autor el 2026-10-21.
+
+Punto de partida: que la app sepa si hay versiones nuevas y permita descargarlas
+y actualizarse.
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Hasta dónde llega la app: solo avisar, avisar y autoactualizarse con
+código propio, o con Sparkle?
+**R1.** «a + opción de b»: avisa de la versión nueva y, además, ofrece
+descargarla e instalarla desde la propia app (código propio, sin Sparkle).
+
+**P2.** Si la app se instaló con Homebrew, ¿se actualiza con `brew upgrade` o se
+autoactualiza igualmente (`auto_updates true` en el cask)?
+**R2.** Con Homebrew: el botón abre Terminal con
+`brew upgrade --cask gitswitcher`. Si se instaló a mano, se autoactualiza.
+
+**P3.** ¿Cuándo se comprueba: solo a mano, o también automáticamente?
+**R3.** Automáticamente (al arrancar y una vez al día) y a mano («Buscar
+actualizaciones…» en el menú), con casilla en Ajustes › General activada por
+defecto.
+
+**P4.** ¿Cómo se avisa: entrada en el menú + ventana con novedades, añadir
+notificación del sistema, o actualizar sin ventana?
+**R4.** Entrada en el menú (con puntito en el icono) y ventana con las novedades y
+los botones «Instalar y reiniciar» / «Actualizar con Homebrew», «Ver en GitHub» y
+«Ahora no».
+
+### 3. Fuentes analizadas
+
+- Repo en el commit de la portada «escritorio» (v1.0.0 publicada en GitHub
+  Releases y en el tap de Homebrew). Releases: `.zip` sin firmar con Developer ID
+  (firma ad hoc), generado por `scripts/release.sh`.
+
+### 4. Decisiones
+
+- **Aviso de versión nueva + actualización opcional desde la app, con código
+  propio.** Por qué: el autor quiere ambas cosas y se mantiene la app sin
+  dependencias.
+- **Instalación con Homebrew → actualiza Homebrew.** La app detecta si la gestiona
+  Homebrew (registro en `…/Caskroom/gitswitcher`) y, en ese caso, ofrece
+  `brew upgrade --cask gitswitcher` en Terminal. Por qué: Homebrew nunca se queda
+  creyendo que hay una versión vieja.
+- **Comprobación automática diaria + manual**, desactivable en Ajustes › General
+  (activada por defecto). Por qué: una consulta pequeña a la API pública de
+  GitHub, sin datos del usuario; quien no quiera conexiones, la apaga.
+- **Aviso en el menú + ventana de novedades.** Sin notificaciones del sistema.
+
+- **Plan aprobado el 2026-10-21** («dale»). Detalles de la implementación:
+  - Huella del zip: se usa el campo `digest` que GitHub publica para cada
+    fichero de una release (comprobado en la v1.0.0); si faltara, no se instala.
+  - Además de la huella: identificador, versión anunciada y
+    `codesign --verify --deep --strict` (la firma ad hoc detecta ficheros
+    modificados).
+  - Sustitución con `FileManager.replaceItemAt` (cambio de una vez); relanzado
+    con un `sh` que espera a que termine el proceso actual y hace `open`.
+  - `UpdateStore` separado de `AccountsStore`.
+  - Tests: comparación de versiones, lectura del JSON, detección de Homebrew y
+    5 instalaciones reales en carpeta temporal con una app falsa firmada ad hoc
+    (éxito, huella mala, otra app, versión distinta a la anunciada, carpeta sin
+    permiso). En los casos de error la app «instalada» queda intacta.
+  - Web: pestaña «Actualizaciones» con captura de la ventana (versión 9.9.9
+    inventada).
+
+### 5. Alternativas descartadas
+
+- **Sparkle.** Experiencia más completa, pero sería la primera dependencia y
+  exige clave de firma EdDSA y un *appcast* que mantener.
+- **Notificación del sistema.** Pediría un permiso nuevo para algo que ya se ve
+  en la barra.
+- **Actualizar sin ventana.** No deja ver qué cambia antes de instalar.
+- **Comprobar solo a mano.** El usuario se enteraría tarde de las versiones.
+- **Autoactualizar siempre con `auto_updates true`.** Homebrew dejaría de
+  controlar la versión instalada.
+
+### 6. Pendiente de comprobar
+
+- Las novedades salen del texto de la release; hoy `release.sh` usa
+  `--generate-notes`, que en un repo sin PRs da poco más que «Full Changelog».
+  Valorar en el futuro un `CHANGELOG.md` o notas a mano.
+- Prueba real de punta a punta: la v1.0.0 instalada no trae el actualizador.
+  Hace falta publicar una versión con él (p. ej. 1.1.0), instalarla, y publicar
+  otra posterior para ver el aviso y la instalación de verdad.
+- Las notas se muestran con formato «en línea» (negritas, enlaces); las listas
+  de Markdown salen con su guion tal cual.

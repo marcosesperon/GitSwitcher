@@ -3,10 +3,11 @@ import SwiftUI
 /// Ventana de ajustes, en pestañas. Todo lo que se cambia aquí se guarda al momento.
 struct SettingsView: View {
     @Bindable var store: AccountsStore
+    @Bindable var updates: UpdateStore
 
     var body: some View {
         TabView(selection: $store.settingsTab) {
-            GeneralSettingsView(store: store)
+            GeneralSettingsView(store: store, updates: updates)
                 .tabItem { Label("General", systemImage: "gearshape") }
                 .tag(SettingsTab.general)
             AccountsSettingsView(store: store)
@@ -25,6 +26,7 @@ struct SettingsView: View {
 
 struct GeneralSettingsView: View {
     @Bindable var store: AccountsStore
+    @Bindable var updates: UpdateStore
 
     @State private var launchAtLogin = LoginItem.isEnabled
     @State private var loginItemError: String?
@@ -48,6 +50,14 @@ struct GeneralSettingsView: View {
                         .foregroundStyle(.red)
                 }
                 Toggle("Show only the icon in the menu bar", isOn: $store.iconOnly)
+            }
+            Section {
+                Toggle("Check for updates automatically", isOn: $updates.checkAutomatically)
+                LabeledContent("Version", value: updates.currentVersion.description)
+            } footer: {
+                Text("Once a day, GitSwitcher asks GitHub for the latest version. No personal data is sent.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)

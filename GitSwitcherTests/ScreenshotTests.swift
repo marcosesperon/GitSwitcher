@@ -20,6 +20,19 @@ struct ScreenshotTests {
         ghPath: "/opt/homebrew/bin/gh", ghVersion: "2.80.0", gitUsesGh: true, brewPath: "/opt/homebrew/bin/brew"
     )
 
+    /// Release de ejemplo para la captura de la ventana de actualización.
+    static func sampleRelease(language: String) -> ReleaseInfo {
+        let notes = language == "es"
+            ? "- **Actualizaciones desde la app:** avisa de versiones nuevas y se instala sola.\n- Guía de configuración en los ajustes.\n- Correcciones menores."
+            : "- **Updates from the app:** get notified of new versions and install them in one click.\n- Setup guide in Settings.\n- Minor fixes."
+        return ReleaseInfo(
+            version: AppVersion("9.9.9")!,
+            notes: notes,
+            pageURL: URL(string: "https://github.com/marcosesperon/GitSwitcher/releases")!,
+            asset: .init(name: "GitSwitcher-9.9.9.zip", downloadURL: URL(string: "https://example.com/GitSwitcher-9.9.9.zip")!, sha256: nil, size: 0)
+        )
+    }
+
     @Test func capturarAjustes() async throws {
         let environment = ProcessInfo.processInfo.environment
         let outputDirectory = try #require(environment["GITSWITCHER_SCREENSHOTS_DIR"])
@@ -29,11 +42,19 @@ struct ScreenshotTests {
         let tabs: [(SettingsTab, String)] = [(.general, "general"), (.accounts, "accounts"), (.guide, "guide")]
         let themes: [(NSAppearance.Name, String)] = [(.aqua, "light"), (.darkAqua, "dark")]
 
+        // Ventana de actualización con una versión inventada.
+        let updates = UpdateStore(storage: PreferencesStorage(defaults: try #require(UserDefaults(suiteName: "GitSwitcherScreenshots-updates"))))
+        updates.loadSampleRelease(Self.sampleRelease(language: language))
+        for (appearance, themeName) in themes {
+            let file = "\(outputDirectory)/update-\(language)-\(themeName).png"
+            try await render(UpdateView(store: updates) {}, appearance: appearance, to: file)
+        }
+
         for (tab, tabName) in tabs {
             for (appearance, themeName) in themes {
                 store.settingsTab = tab
                 let file = "\(outputDirectory)/settings-\(tabName)-\(language)-\(themeName).png"
-                try await render(SettingsView(store: store), appearance: appearance, to: file)
+                try await render(SettingsView(store: store, updates: UpdateStore(storage: PreferencesStorage(defaults: UserDefaults(suiteName: "GitSwitcherScreenshots-updates")!))), appearance: appearance, to: file)
             }
         }
     }

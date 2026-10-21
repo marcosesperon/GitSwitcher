@@ -49,6 +49,25 @@ Barra de menú (StatusMenuController)   Ajustes (SettingsView)
   `.command` temporal y lo abre, sin pedir permisos de automatización. Lo usan
   el botón «Añadir cuenta…» de Ajustes › Cuentas y los botones «Abrir en
   Terminal» de la guía.
+- **Actualizaciones** (`UpdateStore` + `ReleaseFeed` + `UpdateInstaller` +
+  `InstallMethod`):
+  - `ReleaseFeed` pide a la API pública de GitHub la última release
+    (`/repos/marcosesperon/GitSwitcher/releases/latest`): versión, notas,
+    página y el `GitSwitcher-X.Y.Z.zip` con su huella SHA-256 (campo `digest`,
+    que GitHub calcula solo). `AppVersion` compara versiones número a número.
+  - `UpdateStore` comprueba al arrancar y cada 24 h si está activada la casilla,
+    y a mano con «Buscar actualizaciones…». Si hay versión nueva, el icono lleva
+    un puntito y el menú empieza con «Actualización disponible».
+  - `InstallMethod` decide cómo actualizar: si existe
+    `…/Caskroom/gitswitcher` y la app está en `/Applications`, es de Homebrew y
+    se lanza `brew upgrade --cask gitswitcher` en Terminal; si no, se
+    autoactualiza.
+  - `UpdateInstaller` no toca la app instalada hasta el final: comprueba que
+    puede escribir en su carpeta, descarga, compara la huella, descomprime con
+    `ditto`, comprueba identificador, versión y firma (`codesign --verify`), y
+    solo entonces cambia la app vieja por la nueva de una vez
+    (`replaceItemAt`). Luego un script espera a que la app se cierre y abre la
+    nueva.
 - **`AccountsStore`** junta todo: estado, cambio de cuenta, autor de git y
   preferencias. El menú y los ajustes solo leen de aquí.
 - **`CommandRunner`** lanza los procesos sin bloquear la interfaz, siempre con los
@@ -86,12 +105,14 @@ macOS (`com.marcosesperon.GitSwitcher`). No se guarda nada secreto.
 | Ajuste | Por defecto | Qué hace |
 |---|---|---|
 | Abrir al iniciar sesión | No | Registra la app como ítem de inicio (`SMAppService`). También se puede quitar desde Ajustes del Sistema › General › Ítems de inicio. |
+| Buscar actualizaciones automáticamente | Sí | Pregunta a GitHub por la última versión al arrancar y cada 24 h. Sin datos del usuario. |
 | Solo icono en la barra | No | Oculta el nombre de la cuenta activa y deja solo el icono. |
 | Nombre en la barra (por cuenta) | vacío | Alias corto. Si está vacío, se ve el login de GitHub. |
 | Cambiar también el autor de git | No | Al cambiar de cuenta, fija `user.name` y `user.email` en el `~/.gitconfig` global. |
 | Nombre / Correo (por cuenta) | autorrelleno | Solo con la opción anterior activa. Se rellenan desde el perfil de GitHub al activarla o con «Rellenar desde GitHub»; si el correo es privado se usa `ID+login@users.noreply.github.com`. Se pueden editar. |
 
-Claves internas en `UserDefaults`: `iconOnly`, `changeGitAuthor` y
+Claves internas en `UserDefaults`: `iconOnly`, `changeGitAuthor`,
+`checkForUpdates` y
 `accountPreferences` (JSON con alias, nombre y correo por cuenta, indexado por
 `host/login`).
 
@@ -145,6 +166,8 @@ cd site && python3 -m http.server 8000   # y abrir http://localhost:8000
 ### Capturas de la web
 
 Las capturas de los ajustes (`site/img/settings-<pestaña>-<idioma>-<tema>.png`)
+y de la ventana de actualización (`site/img/update-<idioma>-<tema>.png`, con una
+versión 9.9.9 inventada)
 se regeneran con:
 
 ```sh
@@ -184,6 +207,11 @@ con ✗ usando «Abrir en Terminal». Al volver a la pestaña se comprueban otra
 **Añadir una cuenta.** Ajustes → Cuentas → «Añadir cuenta…». Se abre Terminal
 con `gh auth login`; al terminar, la cuenta nueva aparece sola en la lista y en
 el menú.
+
+**Actualizar la app.** Menú → «Buscar actualizaciones…» (o esperar al aviso).
+En la ventana, «Instalar y reiniciar»; si se instaló con Homebrew, «Actualizar
+con Homebrew». Para probar el instalador sin publicar nada están los tests
+`UpdateInstallerTests`, que montan una app falsa en una carpeta temporal.
 
 **Que `git push` use la cuenta activa.** Una sola vez:
 

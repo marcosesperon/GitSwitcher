@@ -10,6 +10,7 @@ struct PreferencesStorage {
         static let accountPreferences = "accountPreferences"
         static let iconOnly = "iconOnly"
         static let changeGitAuthor = "changeGitAuthor"
+        static let checkForUpdates = "checkForUpdates"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -26,6 +27,13 @@ struct PreferencesStorage {
     var changeGitAuthor: Bool {
         get { defaults.bool(forKey: Key.changeGitAuthor) }
         nonmutating set { defaults.set(newValue, forKey: Key.changeGitAuthor) }
+    }
+
+    /// Buscar versiones nuevas automáticamente. Activado por defecto: si la clave
+    /// no existe todavía (instalación nueva), cuenta como «sí».
+    var checkForUpdates: Bool {
+        get { defaults.object(forKey: Key.checkForUpdates) as? Bool ?? true }
+        nonmutating set { defaults.set(newValue, forKey: Key.checkForUpdates) }
     }
 
     /// Preferencias por cuenta, indexadas por `GhAccount.id` ("host/login").
