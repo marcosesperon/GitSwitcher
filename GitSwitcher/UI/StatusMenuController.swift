@@ -54,6 +54,8 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
 
         let symbol: String
         var title = ""
+        // Icono de la cuenta activa (con su color), si ya estamos listos.
+        var accountImage: NSImage?
         switch store.status {
         case .loading:
             symbol = "person.crop.circle"
@@ -62,16 +64,19 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         case .signedOut:
             symbol = "person.crop.circle.badge.plus"
         case .ready:
-            symbol = store.switchingTo == nil ? "person.crop.circle.fill" : "arrow.triangle.2.circlepath.circle"
-            if let active = store.activeAccount, !store.iconOnly {
-                title = store.displayName(for: active)
+            symbol = store.switchingTo == nil ? AccountBadge.defaultSymbol : "arrow.triangle.2.circlepath.circle"
+            if let active = store.activeAccount {
+                if !store.iconOnly { title = store.displayName(for: active) }
+                // Mientras se cambia de cuenta se ve el icono de «cambiando».
+                if store.switchingTo == nil {
+                    accountImage = AccountBadge.image(for: store.preferences(for: active))
+                }
             }
         }
 
-        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "GitSwitcher")
+        let image = accountImage ?? AccountBadge.image(icon: nil, color: nil, fallbackSymbol: symbol)
         // Si hay versión nueva, el icono lleva un puntito.
         button.image = updates.availableRelease == nil ? image : image.map(withUpdateDot)
-        button.image?.isTemplate = true
         // Un espacio delante para que el texto no quede pegado al icono.
         button.title = title.isEmpty ? "" : " " + title
         button.toolTip = store.activeAccount.map {
@@ -80,17 +85,23 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
     }
 
     /// Dibuja el icono con un puntito arriba a la derecha (aviso de versión
-    /// nueva). Sigue siendo «plantilla», así que macOS lo pinta del color de la
-    /// barra como el resto de iconos.
+    /// nueva).
+    /// - Icono sin color (plantilla): el resultado sigue siendo plantilla, así
+    ///   que macOS pinta icono y puntito del color de la barra.
+    /// - Icono con color: el puntito se pinta del color de texto del sistema,
+    ///   que se resuelve al dibujar (oscuro en barra clara y al revés).
     private func withUpdateDot(_ symbol: NSImage) -> NSImage {
+        let isTemplate = symbol.isTemplate
         let size = NSSize(width: symbol.size.width + 3, height: symbol.size.height)
-        return NSImage(size: size, flipped: false) { rect in
+        let result = NSImage(size: size, flipped: false) { rect in
             symbol.draw(in: NSRect(origin: .zero, size: symbol.size))
             let dot = NSRect(x: rect.maxX - 6, y: rect.maxY - 6, width: 6, height: 6)
-            NSColor.black.setFill()
+            (isTemplate ? NSColor.black : NSColor.labelColor).setFill()
             NSBezierPath(ovalIn: dot).fill()
             return true
         }
+        result.isTemplate = isTemplate
+        return result
     }
 
     // MARK: - El menú
@@ -165,6 +176,11 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         let item = actionItem(title, action: #selector(switchAccount(_:)))
         item.state = account.isActive ? .on : .off
         item.representedObject = account
+        // Las cuentas personalizadas llevan su icono (con su color) delante.
+        let preferences = store.preferences(for: account)
+        if preferences.hasCustomAppearance {
+            item.image = AccountBadge.image(for: preferences)
+        }
         item.isEnabled = store.switchingTo == nil
         if !account.isValid {
             item.toolTip = String(localized: "Run “gh auth login” again for this account.")

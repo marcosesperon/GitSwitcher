@@ -75,30 +75,87 @@ struct AccountsSettingsView: View {
 
     var body: some View {
         Form {
-            aliasSection
+            appearanceSection
             gitAuthorSection
         }
         .formStyle(.grouped)
         .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var aliasSection: some View {
+    /// Cómo se ve cada cuenta en la barra: alias, icono y color.
+    private var appearanceSection: some View {
         Section {
             if store.visibleAccounts.isEmpty {
                 Text("No GitHub accounts signed in to gh")
                     .foregroundStyle(.secondary)
             }
             ForEach(store.visibleAccounts) { account in
-                TextField(account.login, text: preferenceBinding(account, \.alias), prompt: Text(account.login))
+                appearanceRows(for: account)
             }
             addAccountRow
         } header: {
-            Text("Menu bar name")
+            Text("Menu bar appearance")
         } footer: {
-            Text("A short name to show in the menu bar instead of the GitHub username.")
+            Text("Alias, icon and color shown in the menu bar for each account. Leave them empty to see the GitHub username and the standard icon.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
+    }
+
+    @ViewBuilder
+    private func appearanceRows(for account: GhAccount) -> some View {
+        let preferences = store.preferences(for: account)
+        // Fila 1: icono actual + login, y el alias a la derecha.
+        LabeledContent {
+            TextField("Alias", text: preferenceBinding(account, \.alias), prompt: Text(account.login))
+                .labelsHidden()
+                .multilineTextAlignment(.trailing)
+                .frame(maxWidth: 200)
+        } label: {
+            Label {
+                Text(account.login).bold()
+            } icon: {
+                if let image = AccountBadge.image(for: preferences) {
+                    Image(nsImage: image)
+                }
+            }
+        }
+        // Fila 2: selectores de icono y color.
+        HStack {
+            Picker("Icon", selection: iconBinding(account)) {
+                Text("Default").tag(AccountIcon?.none)
+                Divider()
+                ForEach(AccountIcon.allCases) { icon in
+                    Label(icon.localizedName, systemImage: icon.symbolName).tag(AccountIcon?.some(icon))
+                }
+            }
+            Picker("Color", selection: colorBinding(account)) {
+                Text("No Color").tag(AccountColor?.none)
+                Divider()
+                ForEach(AccountColor.allCases) { color in
+                    Label {
+                        Text(color.localizedName)
+                    } icon: {
+                        Image(nsImage: AccountBadge.swatch(color))
+                    }
+                    .tag(AccountColor?.some(color))
+                }
+            }
+        }
+    }
+
+    private func iconBinding(_ account: GhAccount) -> Binding<AccountIcon?> {
+        Binding(
+            get: { store.preferences(for: account).icon },
+            set: { newValue in store.updatePreferences(for: account) { $0.icon = newValue } }
+        )
+    }
+
+    private func colorBinding(_ account: GhAccount) -> Binding<AccountColor?> {
+        Binding(
+            get: { store.preferences(for: account).color },
+            set: { newValue in store.updatePreferences(for: account) { $0.color = newValue } }
+        )
     }
 
     /// Botón para iniciar sesión con otra cuenta. Abre Terminal con

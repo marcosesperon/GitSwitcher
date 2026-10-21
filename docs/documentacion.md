@@ -68,6 +68,13 @@ Barra de menú (StatusMenuController)   Ajustes (SettingsView)
     solo entonces cambia la app vieja por la nueva de una vez
     (`replaceItemAt`). Luego un script espera a que la app se cierre y abre la
     nueva.
+- **Icono y color por cuenta** (`AccountAppearance.swift`): `AccountIcon` (24
+  iconos) y `AccountColor` (12 colores de sistema) se guardan por su nombre
+  (`briefcase`, `blue`…), no por el del símbolo, para poder cambiar el símbolo
+  sin perder la elección. `AccountBadge` dibuja el icono: sin color, imagen
+  plantilla (como el resto de la barra); con color, el símbolo pintado de ese
+  color. Las preferencias antiguas sin icono ni color se siguen leyendo, y un
+  icono desconocido no borra el alias ni el autor de git de la cuenta.
 - **`AccountsStore`** junta todo: estado, cambio de cuenta, autor de git y
   preferencias. El menú y los ajustes solo leen de aquí.
 - **`CommandRunner`** lanza los procesos sin bloquear la interfaz, siempre con los
@@ -107,13 +114,15 @@ macOS (`com.marcosesperon.GitSwitcher`). No se guarda nada secreto.
 | Abrir al iniciar sesión | No | Registra la app como ítem de inicio (`SMAppService`). También se puede quitar desde Ajustes del Sistema › General › Ítems de inicio. |
 | Buscar actualizaciones automáticamente | Sí | Pregunta a GitHub por la última versión al arrancar y cada 24 h. Sin datos del usuario. |
 | Solo icono en la barra | No | Oculta el nombre de la cuenta activa y deja solo el icono. |
-| Nombre en la barra (por cuenta) | vacío | Alias corto. Si está vacío, se ve el login de GitHub. |
+| Alias (por cuenta) | vacío | Nombre corto en la barra. Si está vacío, se ve el login de GitHub. |
+| Icono (por cuenta) | Predeterminado | Uno de 24 símbolos (`AccountIcon`). Se ve en la barra (cuenta activa), en el menú y en Ajustes › Cuentas. |
+| Color (por cuenta) | Sin color | Uno de 12 colores de sistema de macOS (`AccountColor`). Sin color, el icono es «plantilla» y macOS lo pinta en blanco/negro según la barra. |
 | Cambiar también el autor de git | No | Al cambiar de cuenta, fija `user.name` y `user.email` en el `~/.gitconfig` global. |
 | Nombre / Correo (por cuenta) | autorrelleno | Solo con la opción anterior activa. Se rellenan desde el perfil de GitHub al activarla o con «Rellenar desde GitHub»; si el correo es privado se usa `ID+login@users.noreply.github.com`. Se pueden editar. |
 
 Claves internas en `UserDefaults`: `iconOnly`, `changeGitAuthor`,
 `checkForUpdates` y
-`accountPreferences` (JSON con alias, nombre y correo por cuenta, indexado por
+`accountPreferences` (JSON con alias, nombre, correo, icono y color por cuenta, indexado por
 `host/login`).
 
 ### Publicar una versión

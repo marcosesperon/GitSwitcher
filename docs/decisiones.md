@@ -858,3 +858,96 @@ el historial: ¿cambiarla, cambiarla y reescribir el historial, o dejarla?
 ### 6. Pendiente de comprobar
 
 - Nada.
+
+## 2026-10-21 — Icono y color por cuenta
+
+### 1. La petición tal como se ha entendido
+
+- **Ajustes › Cuentas:** cada cuenta muestra su icono actual junto al login y
+  tiene dos selectores nuevos:
+  - **Icono:** «Predeterminado» (el de ahora) o uno de los ~24 de la lista; el
+    desplegable enseña cada icono.
+  - **Color:** «Sin color» (el de ahora: blanco/negro según la barra) o un color
+    de sistema de macOS (rojo, naranja, amarillo, verde, menta, cian, azul,
+    índigo, morado, rosa, marrón, gris).
+- **Barra de menús:** el icono pasa a ser el de la cuenta activa, con su color.
+  El alias sigue en el color normal de la barra. Con «Solo icono» se ve solo el
+  icono de color. Los estados especiales (cargando, falta gh, cambiando de
+  cuenta) mantienen sus iconos de siempre, y el puntito de «actualización
+  disponible» se sigue viendo encima.
+- **Menú desplegable:** cada cuenta lleva su icono con su color delante del
+  nombre (además de la marca ✓ de la activa).
+- Las cuentas sin icono ni color se ven exactamente como ahora.
+- Textos nuevos en los 9 idiomas; capturas de la web regeneradas.
+
+**Confirmación:** confirmado por el autor el 2026-10-21.
+
+Punto de partida: poder asociar a cada cuenta un icono distinto y un color, para
+distinguir la cuenta activa en la barra de menús.
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Cómo se aplica el color: al icono entero con una paleta cerrada de
+colores de sistema, o solo en un detalle (puntito) junto a un icono neutro?
+**R1.** «a»: el icono entero, con paleta cerrada de colores de sistema de macOS.
+
+**P2.** ¿Qué iconos: lista corta (~12), cualquier SF Symbol por nombre, o ambas?
+**R2.** Lista seleccionada, pero algo más amplia que 12.
+
+**P3.** ¿Dónde se ve el icono: solo en la barra, también en el menú, o también en
+Ajustes › Cuentas?
+**R3.** En los tres sitios: barra, menú desplegable y Ajustes › Cuentas.
+
+### 3. Fuentes analizadas
+
+- `StatusMenuController.swift` (icono de plantilla, SF Symbols) y
+  `AccountPreferences` (alias y autor git por cuenta), en `ceecf2d`.
+
+### 4. Decisiones
+
+- **Color en el icono entero, paleta cerrada de colores de sistema** (rojo,
+  naranja, amarillo, verde, azul, morado, rosa… con variantes para claro/oscuro).
+  Por qué: se ve bien en barras claras y oscuras sin que el usuario tenga que
+  elegir un tono que funcione en ambas.
+- **Lista cerrada de ~24 iconos** (SF Symbols) elegidos para cuentas: persona,
+  dos personas, maletín, casa, edificio, edificio de columnas, código `</>`,
+  terminal, chip, servidor, nube, globo, birrete, libro, llave, escudo, estrella,
+  corazón, rayo, hoja, bandera, cohete, gato y pincel. Por qué: cubre trabajo,
+  personal, estudios, clientes y proyectos sin que haya que conocer nombres de
+  SF Symbols.
+- **El icono (con su color) se ve en la barra, en el menú y en Ajustes ›
+  Cuentas.** Por qué: identifica la cuenta en todas partes y en Ajustes se ve al
+  momento lo elegido.
+
+- **Plan aprobado el 2026-10-21** («dale»). Implementación:
+  - SF Symbols comprobados en el sistema; no hay cohete, se usa avión de papel.
+  - Con color, el icono deja de ser plantilla; el puntito de «actualización
+    disponible» se pinta entonces con el color de texto del sistema (se resuelve
+    al dibujar) para que se vea en barra clara y oscura.
+  - En el menú, solo las cuentas personalizadas llevan icono (las demás, como
+    antes).
+  - Ajustes › Cuentas: la sección pasa a «Aspecto en la barra de menús»: por
+    cuenta, fila con icono + login + alias, y fila con selectores de icono
+    (dibujo + nombre) y color (muestra + nombre).
+  - 43 textos nuevos en 8 idiomas (nombres de colores según Apple en cada
+    idioma); se quitan los 2 de la antigua sección.
+  - 6 tests nuevos (39 en total). Capturas: `octo-work` maletín azul,
+    `octo-personal` casa verde; demo de la web con los mismos iconos.
+
+### 5. Alternativas descartadas
+
+- **Cualquier SF Symbol escribiendo su nombre.** Obliga a conocer los nombres y
+  admite errores.
+- **Color libre (selector de cualquier color).** Un tono oscuro desaparecería en
+  una barra oscura, y al revés.
+- **Solo un puntito de color junto a un icono neutro.** Más discreto, pero el
+  autor prefiere el icono entero coloreado.
+
+### 6. Pendiente de comprobar
+
+- `LocalizationTests` no detecta textos nuevos del código que aún no están en el
+  catálogo (solo revisa los que ya están). Mejora posible: comparar con lo que
+  extrae el compilador.
+- Prueba del autor en la barra real (en las capturas no sale la barra de
+  menús): icono de color con barra clara y oscura, y con el puntito de
+  actualización.

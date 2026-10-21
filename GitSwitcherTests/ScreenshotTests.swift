@@ -68,8 +68,8 @@ struct ScreenshotTests {
         let storage = PreferencesStorage(defaults: defaults)
         storage.changeGitAuthor = true
         storage.accountPreferences = [
-            "github.com/octo-work": AccountPreferences(alias: "Work", gitName: "Octo Cat", gitEmail: "octo@work.example"),
-            "github.com/octo-personal": AccountPreferences(alias: "Personal", gitName: "Octo Cat", gitEmail: "1234567+octo-personal@users.noreply.github.com"),
+            "github.com/octo-work": AccountPreferences(alias: "Work", gitName: "Octo Cat", gitEmail: "octo@work.example", icon: .briefcase, color: .blue),
+            "github.com/octo-personal": AccountPreferences(alias: "Personal", gitName: "Octo Cat", gitEmail: "1234567+octo-personal@users.noreply.github.com", icon: .house, color: .green),
         ]
 
         let store = AccountsStore(storage: storage)
