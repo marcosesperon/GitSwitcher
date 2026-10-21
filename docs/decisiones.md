@@ -762,3 +762,44 @@ japonés, chino simplificado y coreano.
   README.
 - Las notas de la ventana de actualización vienen del texto de la release, que
   se escribe en un solo idioma (inglés).
+
+## 2026-10-21 — Publicación de la v1.1.0
+
+*(Modo directo: «haz los commits y publica la 1.1.0».)*
+
+### 1. La petición tal como se ha entendido
+
+Hacer dos commits (actualizaciones desde la app; traducción a 9 idiomas),
+subirlos y publicar la v1.1.0. **Confirmación:** petición explícita del autor.
+
+### 2. Preguntas y respuestas
+
+- Ninguna.
+
+### 3. Fuentes analizadas
+
+- Cambios sin commitear de las dos peticiones anteriores.
+
+### 4. Decisiones
+
+- **Dos commits limpios aunque cuatro ficheros mezclaban ambos trabajos**
+  (catálogo de textos, README, documentación, decisiones). Para el primero se
+  generó una versión de esos ficheros solo con lo de actualizaciones (catálogo
+  en/es, `project.yml` e `Info.plist` con 2 idiomas) y se comprobó que compilaba
+  y pasaba sus 30 tests; después se restauraron los completos (33 tests).
+  Commits `f950128` y `9f81cd5`.
+- Se quitaron dos avisos del compilador en `UpdateTests` (`#require` redundante).
+- Release `v1.1.0` (sha256 `385aba72…351967`) y cask actualizado. Las notas
+  automáticas se sustituyeron por notas escritas a mano (son las que verá la
+  ventana de novedades en futuras versiones).
+
+### 5. Alternativas descartadas
+
+- **Un único commit con todo.** Más simple, pero mezcla dos funcionalidades
+  independientes en el historial.
+
+### 6. Pendiente de comprobar
+
+- Prueba real del actualizador: instalar la 1.1.0 (`brew upgrade --cask
+  gitswitcher` en el Mac del autor) y, cuando se publique la siguiente versión,
+  comprobar el aviso y la actualización.
