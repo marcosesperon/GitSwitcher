@@ -36,6 +36,11 @@
   --term-ink: #d6dde6;
   --term-dim: #6c7683;
   --shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 24px 60px -24px rgba(20, 24, 30, .35);
+  /* Fondo de escritorio de la portada (se ve a través de la barra) */
+  --wall-1: #9fd8b4;
+  --wall-2: #7fb8e6;
+  --wall-3: #f3d9a4;
+  --wall-base: #dfeee6;
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
 }
@@ -57,6 +62,10 @@
     --menu: rgba(40, 42, 46, .9);
     --menu-hover: #0a64d6;
     --term-bg: #07090c;
+    --wall-1: #1f6b45;
+    --wall-2: #1d4f8a;
+    --wall-3: #5b3f7a;
+    --wall-base: #0f1d24;
     --shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 30px 70px -30px rgba(0, 0, 0, .8);
   }
 }
@@ -118,6 +127,12 @@ html[data-lang="es"] [lang="en"]:not(html) { display: none !important; }
 
 /* Menú desplegable de GitSwitcher */
 .gs { position: relative; }
+.gs:not(.seen) #gs-button { animation: halo 2.2s ease-out infinite; }
+@keyframes halo {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 65%, transparent); }
+  70%  { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
 .gs-menu {
   position: absolute; right: 0; top: 26px;
   min-width: 250px; padding: 5px;
@@ -146,13 +161,28 @@ html[data-lang="es"] [lang="en"]:not(html) { display: none !important; }
 /* ------------------------------------------------------------------
    Portada
    ------------------------------------------------------------------ */
-.hero { padding: 88px 0 56px; }
+.hero {
+  position: relative;
+  margin-top: -31px;               /* sube por detrás de la barra de menús */
+  padding: 119px 0 72px;
+  background:
+    radial-gradient(60% 70% at 12% 8%, var(--wall-1), transparent 70%),
+    radial-gradient(55% 65% at 88% 0%, var(--wall-2), transparent 70%),
+    radial-gradient(50% 60% at 70% 95%, var(--wall-3), transparent 70%),
+    var(--wall-base);
+}
+/* Fundido del escritorio hacia el fondo de la página */
+.hero::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 120px;
+  background: linear-gradient(transparent, var(--bg)); pointer-events: none;
+}
+.hero > .wrap { position: relative; z-index: 1; }
 .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
-@media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } .hero { padding-top: 56px; } }
+@media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } .hero { padding-top: 87px; } }
 
 .eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
-  font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3);
+  font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2);
 }
 .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); }
 h1 {
@@ -210,7 +240,7 @@ h1 .swap { color: var(--accent); }
 .t-amber { color: #e3a54a; }
 .caret { display: inline-block; width: 8px; height: 1.1em; vertical-align: -2px; background: var(--term-ink); animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-.hint { margin-top: 14px; font-size: 14px; color: var(--ink-3); display: flex; align-items: center; gap: 8px; }
+.hint { margin-top: 14px; font-size: 14px; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
 .hint svg { width: 16px; height: 16px; flex: none; animation: nudge 1.6s ease-in-out infinite; }
 @keyframes nudge { 50% { transform: translateY(-3px); } }
 
@@ -299,7 +329,7 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
 @keyframes rise { to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .rise { animation: none; opacity: 1; transform: none; }
-  .caret, .hint svg { animation: none; }
+  .caret, .hint svg, .gs:not(.seen) #gs-button { animation: none; }
   html { scroll-behavior: auto; }
 }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -626,6 +656,7 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
   };
   v_gs_button.addEventListener("click", (v_event) => {
     v_event.stopPropagation();
+    v_gs.classList.add("seen");
     set_menu_open(v_gs.dataset.open !== "true");
   });
   document.addEventListener("click", () => set_menu_open(false));

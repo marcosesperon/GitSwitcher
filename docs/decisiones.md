@@ -548,7 +548,18 @@ README. Antes, revisión en local por el autor.
     iframe, porque Chrome sin ventana no baja de ~500 px).
 - **Visto bueno del autor tras revisar en local** («me parece bien»).
 
+- **Ajustes tras publicar (comentarios del autor):**
+  - Las pestañas de las capturas estaban en orden inverso al de la app; ahora
+    General, Cuentas, Guía (con Guía seleccionada al entrar).
+  - En oscuro la barra no se reconocía como la de macOS. Opción elegida por el
+    autor: la portada hace de escritorio, con un fondo de degradados (verde/azul
+    y un toque cálido) que sube por detrás de la barra translúcida y se funde con
+    la página; y un halo en el icono de GitSwitcher hasta el primer clic.
+
 ### 5. Alternativas descartadas
+
+- **Solo más contraste en la barra.** Cambio mínimo, pero se reconoce menos como
+  barra de macOS.
 
 - **Solo inglés.** Deja fuera el español, que la app ya soporta.
 - **Dos páginas (`index.html` + `es/index.html`).** Algo mejor para buscadores,
