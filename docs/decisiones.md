@@ -1146,3 +1146,87 @@ una tarjeta para el icono y color por cuenta?
 ### 6. Pendiente de comprobar
 
 - Nada.
+
+## 2026-10-21 — Botón de donación y autoría
+
+### 1. La petición tal como se ha entendido
+
+- **README:** insignia «Buy Me A Coffee» (la misma de CAOBA) arriba, bajo la
+  descripción, enlazada a `https://buymeacoffee.com/marcosesperon`.
+- **Web (`site/index.html`), en tres sitios, bilingüe («Buy me a coffee» /
+  «Invítame a un café»):**
+  1. Barra de menús simulada: un icono de taza más, como otro status item, que
+     abre la página de donación (con su texto al pasar el ratón).
+  2. Portada: botón amarillo junto a «Instalar» y «Código fuente».
+  3. Pie: el mismo botón junto a los enlaces.
+- **App, Ajustes › General:** nueva sección «Acerca de» al final con:
+  - «GitSwitcher X.Y.Z» (la fila «Versión» actual se mueve aquí),
+  - «Hecho por Marcos Esperón»,
+  - botón «Ver en GitHub» → `github.com/marcosesperon/GitSwitcher`,
+  - botón «Invítame a un café» (icono de taza) → página de donación.
+  Textos nuevos en los 9 idiomas; capturas de la pestaña General regeneradas.
+
+**Confirmación:** confirmado por el autor el 2026-10-21.
+
+Punto de partida: añadir a `site/index.html` y a `README.md` el botón de
+donación que el autor usa en su proyecto CAOBA, y en la app, en Ajustes ›
+General, indicar el autor y el enlace a GitHub (con la donación).
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Dónde va el botón en la web: tres sitios como en CAOBA (con la barra
+adaptada a icono de taza), dos (portada y pie) o solo el pie?
+**R1.** Tres sitios: icono de taza en la barra de menús simulada, botón amarillo
+junto a «Instalar» en la portada y otro en el pie.
+
+**P2.** En Ajustes › General, ¿«Ver en GitHub» lleva al repositorio, al perfil del
+autor o a ambos (nombre → perfil, botón → repo)?
+**R2.** Al repositorio de la app.
+
+### 3. Fuentes analizadas
+
+- Proyecto CAOBA del autor (`~/Documents/GITs/CAOBA`):
+  - `README.md`: insignia shields.io «Buy Me A Coffee» (fondo `#ffdd00`, logo
+    `buy-me-a-coffee`) enlazada a `https://buymeacoffee.com/marcosesperon`.
+  - `index.html`: el mismo enlace en tres sitios: chip con icono de taza en la
+    navegación, botón amarillo (`#ffdd00`, texto `#111`) junto al de descarga y
+    otro en la sección final. Textos «Invítame a un café» / «Buy me a coffee».
+  - App: botón «Donación» con el símbolo `cup.and.saucer`.
+
+### 4. Decisiones
+
+- **Web: donación en tres sitios.** En la barra simulada va como un icono de taza
+  más (igual que otro status item de macOS), para no romper el aspecto de barra
+  de menús; en la portada y el pie, botón amarillo como en CAOBA.
+- **App: sección «Acerca de» al final de Ajustes › General** con versión, autor
+  («Hecho por Marcos Esperón», sin enlace), «Ver en GitHub» (repositorio) e
+  «Invítame a un café». La fila «Versión» se mueve aquí.
+
+- **Plan aprobado el 2026-10-21** («dale»). Implementación:
+  - `AppLinks` centraliza repositorio, donación y autor; `ReleaseFeed` lo usa.
+  - «Acerca de»: icono de la app, «GitSwitcher X.Y.Z» (sin traducir), «Hecho por
+    Marcos Esperón», botones «Ver en GitHub» (`link`, no hay símbolo de GitHub en
+    SF Symbols) e «Invítame a un café» (`cup.and.saucer`, como en CAOBA).
+  - 3 textos nuevos en 9 idiomas; se quita «Version» (ya no se usa).
+  - Web: icono de taza en la barra simulada (con texto emergente según idioma),
+    botón amarillo `#ffdd00` en portada y pie, con la misma taza SVG de CAOBA.
+  - README: la misma insignia de shields.io que CAOBA.
+  - Hallazgo: las capturas mostraban «GitSwitcher 1.0.0» porque
+    `MARKETING_VERSION` de `project.yml` seguía en 1.0.0 (las releases ponen la
+    versión al compilar). Se sube a la versión que se va a publicar (1.2.3) y se
+    documenta que hay que mantenerlo
+    al día antes de regenerar capturas.
+  - Revisado con capturas: app (General), web en claro, oscuro y móvil, y pie.
+
+### 5. Alternativas descartadas
+
+- **Chip amarillo en la barra, como en CAOBA.** Rompería la imitación de la
+  barra de menús de macOS.
+- **Enlazar también el perfil del autor.** Basta con el repositorio.
+- **Solo portada y pie / solo pie.** El autor prefiere la misma presencia que en
+  CAOBA.
+
+### 6. Pendiente de comprobar
+
+- `MARKETING_VERSION` en `project.yml` se desfasa en cada release. Mejora
+  posible: que `release.sh` avise si no coincide con la versión que se publica.

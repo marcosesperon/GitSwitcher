@@ -53,18 +53,54 @@ struct GeneralSettingsView: View {
             }
             Section {
                 Toggle("Check for updates automatically", isOn: $updates.checkAutomatically)
-                LabeledContent("Version", value: updates.currentVersion.description)
             } footer: {
                 Text("Once a day, GitSwitcher asks GitHub for the latest version. No personal data is sent.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            aboutSection
         }
         .formStyle(.grouped)
         .fixedSize(horizontal: false, vertical: true)
         // Si el usuario quita la app de los ítems de inicio desde Ajustes del
         // Sistema, lo reflejamos al volver a esta pestaña.
         .onAppear { launchAtLogin = LoginItem.isEnabled }
+    }
+}
+
+// MARK: - Acerca de
+
+extension GeneralSettingsView {
+    /// Versión, autor y enlaces al repositorio y a la página de donación.
+    var aboutSection: some View {
+        Section("About") {
+            HStack(spacing: 12) {
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                VStack(alignment: .leading, spacing: 2) {
+                    // Nombre y versión no se traducen.
+                    Text(verbatim: "GitSwitcher \(updates.currentVersion.description)")
+                        .font(.headline)
+                    Text("Made by \(AppLinks.author)")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            HStack {
+                Button {
+                    NSWorkspace.shared.open(AppLinks.repository)
+                } label: {
+                    Label("View on GitHub", systemImage: "link")
+                }
+                Spacer()
+                Button {
+                    NSWorkspace.shared.open(AppLinks.donation)
+                } label: {
+                    Label("Buy me a coffee", systemImage: "cup.and.saucer")
+                }
+            }
+        }
     }
 }
 

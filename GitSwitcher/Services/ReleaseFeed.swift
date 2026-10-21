@@ -43,8 +43,7 @@ enum ReleaseFeedError: LocalizedError {
 /// Usa la API pública (sin token): no envía nada del usuario, solo pide un JSON
 /// con la última release del repositorio.
 enum ReleaseFeed {
-    static let repository = "marcosesperon/GitSwitcher"
-    static let latestURL = URL(string: "https://api.github.com/repos/\(repository)/releases/latest")!
+    static let latestURL = URL(string: "https://api.github.com/repos/\(AppLinks.repositoryPath)/releases/latest")!
 
     static func fetchLatest(session: URLSession = .shared) async throws -> ReleaseInfo {
         var request = URLRequest(url: latestURL, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 20)

@@ -76,6 +76,10 @@ Barra de menú (StatusMenuController)   Ajustes (SettingsView)
   plantilla (como el resto de la barra); con color, el símbolo pintado de ese
   color. Las preferencias antiguas sin icono ni color se siguen leyendo, y un
   icono desconocido no borra el alias ni el autor de git de la cuenta.
+- **`AppLinks`** reúne el repositorio (`marcosesperon/GitSwitcher`), la página
+  de donación (`buymeacoffee.com/marcosesperon`) y el nombre del autor. Los usan
+  `ReleaseFeed` y la sección «Acerca de» de Ajustes › General (versión, autor,
+  «Ver en GitHub» e «Invítame a un café»).
 - **`AccountsStore`** junta todo: estado, cambio de cuenta, autor de git y
   preferencias. El menú y los ajustes solo leen de aquí.
 - **`CommandRunner`** lanza los procesos sin bloquear la interfaz, siempre con los
@@ -183,6 +187,11 @@ se regeneran con:
 ```sh
 scripts/screenshots.sh
 ```
+
+La versión que se ve en las capturas (Ajustes › General y ventana de
+actualización) es `MARKETING_VERSION` de `project.yml`: conviene subirla a la
+última publicada antes de regenerarlas (`release.sh` pone la buena al compilar
+la release, pero no toca `project.yml`).
 
 Lanza el test `ScreenshotTests` dos veces (inglés y español). Ese test no corre
 con los tests normales: solo cuando el script le pasa la variable

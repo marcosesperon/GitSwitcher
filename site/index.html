@@ -214,6 +214,12 @@ h1 .swap { color: var(--accent); }
 .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px -10px rgba(0,0,0,.35); }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .btn svg { width: 16px; height: 16px; }
+/* Botón de donación: amarillo de Buy Me a Coffee, igual que en los demás proyectos */
+.btn.coffee { background: #ffdd00; color: #111; border-color: #ffdd00; }
+.btn.coffee:hover { background: #f5d000; border-color: #f5d000; }
+.cup { flex: none; }
+footer .btn.coffee { padding: 7px 12px; font-size: 13px; }
+footer .btn.coffee:hover { color: #111; text-decoration: none; }
 
 /* Línea de comando con botón copiar */
 .cmd {
@@ -331,7 +337,7 @@ footer { padding: 36px 0 56px; border-top: 1px solid var(--line); color: var(--i
 footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between; }
 footer .brand { display: flex; align-items: center; gap: 10px; color: var(--ink-2); font-weight: 600; }
 footer .brand img { width: 28px; height: 28px; }
-footer nav { display: flex; gap: 18px; flex-wrap: wrap; }
+footer nav { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
 footer a { color: var(--ink-2); text-decoration: none; }
 footer a:hover { color: var(--ink); text-decoration: underline; }
 
@@ -362,6 +368,7 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
   <a class="item only-wide" href="https://github.com/marcosesperon/GitSwitcher">GitHub</a>
   <span class="spacer"></span>
 
+  <a class="item" id="coffee-item" href="https://buymeacoffee.com/marcosesperon" target="_blank" rel="noopener" data-title-en="Buy me a coffee" data-title-es="Invítame a un café" aria-label="Buy me a coffee"><svg class="cup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M4 21h14"/><path d="M8 3.5v2M12 3.5v2"/></svg></a>
   <span class="lang-switch" role="group" aria-label="Language">
     <button class="item" type="button" data-set-lang="en" aria-pressed="true">EN</button>
     <button class="item" type="button" data-set-lang="es" aria-pressed="false">ES</button>
@@ -424,6 +431,7 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
             <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0a8 8 0 0 0-2.5 15.6c.4 0 .5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.3 1.9.9 2.4.7 0-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.5 7.5 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3.1-1.9 3.7-3.6 3.9.3.3.6.8.6 1.5v2.2c0 .2.1.5.6.4A8 8 0 0 0 8 0z"/></svg>
             <span lang="en">Source code</span><span lang="es">Código fuente</span>
           </a>
+          <a class="btn coffee" href="https://buymeacoffee.com/marcosesperon" target="_blank" rel="noopener"><svg class="cup" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M4 21h14"/><path d="M8 3.5v2M12 3.5v2"/></svg> <span lang="en">Buy me a coffee</span><span lang="es">Invítame a un café</span></a>
         </div>
         <div class="cmd rise">
           <code>brew install --cask marcosesperon/tap/gitswitcher</code>
@@ -619,6 +627,7 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
       <a href="https://github.com/marcosesperon/GitSwitcher">GitHub</a>
       <a href="https://github.com/marcosesperon/GitSwitcher/releases"><span lang="en">Releases</span><span lang="es">Versiones</span></a>
       <a href="https://github.com/marcosesperon/GitSwitcher/blob/main/LICENSE"><span lang="en">MIT License</span><span lang="es">Licencia MIT</span></a>
+      <a class="btn coffee" href="https://buymeacoffee.com/marcosesperon" target="_blank" rel="noopener"><svg class="cup" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M4 21h14"/><path d="M8 3.5v2M12 3.5v2"/></svg> <span lang="en">Buy me a coffee</span><span lang="es">Invítame a un café</span></a>
     </nav>
   </div>
 </footer>
@@ -641,6 +650,10 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
     document.title = v_lang === "es"
       ? "GitSwitcher — cambia de cuenta de GitHub CLI desde la barra de menús"
       : "GitSwitcher — switch GitHub CLI accounts from the menu bar";
+    // El texto emergente del icono de la taza no puede ir en dos <span>.
+    const v_coffee = document.getElementById("coffee-item");
+    v_coffee.title = v_coffee.dataset[v_lang === "es" ? "titleEs" : "titleEn"];
+    v_coffee.setAttribute("aria-label", v_coffee.title);
     update_shot();
     render_terminal();
   };
