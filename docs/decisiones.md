@@ -1042,3 +1042,39 @@ se actualiza ya el Mac del autor a la 1.2.0?
   (a mano).
 - Ver si el cambio de firma en cada versión hace que macOS vuelva a pedir
   permisos (p. ej. ítem de inicio) tras actualizar.
+
+## 2026-10-21 — Texto de la ventana de actualización con Homebrew
+
+*(Pregunta abierta desde la instalación de la 1.1.0, respondida «sí, cámbialo».)*
+
+### 1. La petición tal como se ha entendido
+
+Homebrew 7 vuelve a abrir la app tras `brew upgrade`, así que el aviso «vuelve a
+abrir GitSwitcher cuando termine» sobra. Cambiarlo por uno condicional, en los 9
+idiomas. **Confirmación:** «sí, cámbialo».
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Se cambia el texto por «si GitSwitcher no se vuelve a abrir sola,
+ábrela»?
+**R1.** Sí.
+
+### 3. Fuentes analizadas
+
+- Salida de `brew upgrade` en el Mac del autor: «Reopening 1 application closed
+  during upgrade».
+
+### 4. Decisiones
+
+- Nuevo texto (en): «GitSwitcher was installed with Homebrew, so Homebrew
+  updates it. If GitSwitcher doesn't open again by itself when it finishes, open
+  it.» Condicional porque versiones anteriores de Homebrew no la reabren.
+
+### 5. Alternativas descartadas
+
+- **Quitar la frase.** Con Homebrew antiguo el usuario se quedaría sin app
+  abierta sin saber por qué.
+
+### 6. Pendiente de comprobar
+
+- Nada.

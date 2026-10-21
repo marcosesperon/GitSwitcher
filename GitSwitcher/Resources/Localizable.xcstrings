@@ -2503,54 +2503,54 @@
         }
       }
     },
-    "GitSwitcher was installed with Homebrew, so Homebrew updates it. Open GitSwitcher again when it finishes.": {
+    "GitSwitcher was installed with Homebrew, so Homebrew updates it. If GitSwitcher doesn't open again by itself when it finishes, open it.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "GitSwitcher se instaló con Homebrew, así que la actualiza Homebrew. Vuelve a abrir GitSwitcher cuando termine."
+            "value": "GitSwitcher se instaló con Homebrew, así que la actualiza Homebrew. Si al terminar GitSwitcher no se vuelve a abrir sola, ábrela."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "GitSwitcher a été installé avec Homebrew : c’est donc Homebrew qui le met à jour. Rouvrez GitSwitcher une fois l’opération terminée."
+            "value": "GitSwitcher a été installé avec Homebrew : c’est donc Homebrew qui le met à jour. Si GitSwitcher ne se rouvre pas tout seul une fois l’opération terminée, ouvrez-le."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "GitSwitcher wurde mit Homebrew installiert, daher aktualisiert Homebrew die App. Öffne GitSwitcher erneut, wenn der Vorgang abgeschlossen ist."
+            "value": "GitSwitcher wurde mit Homebrew installiert, daher aktualisiert Homebrew die App. Falls sich GitSwitcher danach nicht von selbst wieder öffnet, öffne die App."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "GitSwitcher è stato installato con Homebrew, quindi è Homebrew ad aggiornarlo. Riapri GitSwitcher quando ha finito."
+            "value": "GitSwitcher è stato installato con Homebrew, quindi è Homebrew ad aggiornarlo. Se al termine GitSwitcher non si riapre da solo, aprilo."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O GitSwitcher foi instalado com o Homebrew, então é o Homebrew que o atualiza. Abra o GitSwitcher novamente quando terminar."
+            "value": "O GitSwitcher foi instalado com o Homebrew, então é o Homebrew que o atualiza. Se o GitSwitcher não abrir sozinho ao terminar, abra-o."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "GitSwitcher は Homebrew でインストールされたため、Homebrew がアップデートします。完了したら GitSwitcher をもう一度開いてください。"
+            "value": "GitSwitcher は Homebrew でインストールされたため、Homebrew がアップデートします。完了後に GitSwitcher が自動で開かない場合は、開いてください。"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "GitSwitcher 是通过 Homebrew 安装的，因此由 Homebrew 负责更新。完成后请重新打开 GitSwitcher。"
+            "value": "GitSwitcher 是通过 Homebrew 安装的，因此由 Homebrew 负责更新。如果完成后 GitSwitcher 没有自动重新打开，请手动打开它。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "GitSwitcher가 Homebrew로 설치되었으므로 Homebrew가 업데이트합니다. 완료되면 GitSwitcher를 다시 여십시오."
+            "value": "GitSwitcher가 Homebrew로 설치되었으므로 Homebrew가 업데이트합니다. 완료 후 GitSwitcher가 자동으로 다시 열리지 않으면 직접 여십시오."
           }
         }
       }

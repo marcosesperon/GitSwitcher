@@ -24,7 +24,7 @@ struct UpdateView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 if store.installMethod == .homebrew {
-                    Text("GitSwitcher was installed with Homebrew, so Homebrew updates it. Open GitSwitcher again when it finishes.")
+                    Text("GitSwitcher was installed with Homebrew, so Homebrew updates it. If GitSwitcher doesn't open again by itself when it finishes, open it.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
