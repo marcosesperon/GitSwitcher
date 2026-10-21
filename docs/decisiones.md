@@ -1020,6 +1020,13 @@ se actualiza ya el Mac del autor a la 1.2.0?
   Homebrew avisó «signer changed so macOS may prompt at next launch»: esperable
   con firma ad hoc (cada compilación tiene una firma distinta).
 
+- `nonisolated` en `homebrewUpgradeCommands` (función pura dentro de una clase
+  aislada al hilo principal) para poder probarla.
+- 4 tests nuevos (43 en total), uno de ellos ejecuta el script con `sh` y
+  comprueba que si el primer comando falla el segundo no corre y el script se
+  borra igualmente.
+- Commit `44b4e4c` y release `v1.2.1` (sha256 `01effae3…88f82f3`) con notas.
+
 ### 5. Alternativas descartadas
 
 - **`HOMEBREW_AUTO_UPDATE_SECS=0` en el entorno del comando.** No funciona si el
@@ -1030,6 +1037,8 @@ se actualiza ya el Mac del autor a la 1.2.0?
 ### 6. Pendiente de comprobar
 
 - Probar el botón con el arreglo: hace falta tener la 1.2.1 instalada y publicar
-  una versión posterior.
+  una versión posterior. Ojo: desde la 1.2.0 el botón todavía lanza solo
+  `brew upgrade`, así que el salto 1.2.0 → 1.2.1 necesita un `brew update` antes
+  (a mano).
 - Ver si el cambio de firma en cada versión hace que macOS vuelva a pedir
   permisos (p. ej. ítem de inicio) tras actualizar.
