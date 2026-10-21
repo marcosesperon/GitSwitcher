@@ -505,9 +505,10 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
       <div class="label"><span lang="en">Settings</span><span lang="es">Ajustes</span></div>
       <h2><span lang="en">Three tabs, nothing more.</span><span lang="es">Tres pestañas, nada más.</span></h2>
       <div class="shots-tabs" role="tablist" aria-label="Settings tabs">
-        <button role="tab" aria-selected="true" data-tab="guide"><span lang="en">Guide</span><span lang="es">Guía</span></button>
-        <button role="tab" aria-selected="false" data-tab="accounts"><span lang="en">Accounts</span><span lang="es">Cuentas</span></button>
+        <!-- Mismo orden que en la app; la Guía viene seleccionada por ser la más útil al llegar -->
         <button role="tab" aria-selected="false" data-tab="general">General</button>
+        <button role="tab" aria-selected="false" data-tab="accounts"><span lang="en">Accounts</span><span lang="es">Cuentas</span></button>
+        <button role="tab" aria-selected="true" data-tab="guide"><span lang="en">Guide</span><span lang="es">Guía</span></button>
       </div>
       <div class="shots">
         <div class="shot-frame">
