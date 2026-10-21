@@ -444,6 +444,9 @@ el autor eligió «Sí, v1.0.0».
 
 ### 6. Pendiente de comprobar
 
-- Instalar con `brew install --cask marcosesperon/tap/gitswitcher` en un Mac
-  real y comprobar que el `postflight` quita la cuarentena y la app abre sin
-  aviso de Gatekeeper.
+- ~~Instalar con Homebrew y comprobar la cuarentena~~ → comprobado en el Mac del
+  autor (Homebrew 7.0.9): se instala en `/Applications`, sin atributo
+  `com.apple.quarantine`, y abre sin aviso. Homebrew 7 tiene «Tap Trust» para
+  taps no oficiales; al instalar el cask por su nombre completo lo añadió solo a
+  `trust.json`. Vigilar si en futuras versiones de Homebrew hay que pedir
+  `brew trust` explícito y, si es así, documentarlo en el README.
