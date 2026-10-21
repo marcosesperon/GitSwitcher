@@ -1078,3 +1078,34 @@ idiomas. **Confirmación:** «sí, cámbialo».
 ### 6. Pendiente de comprobar
 
 - Nada.
+
+## 2026-10-21 — Publicación de la v1.2.2
+
+*(Modo directo: «haz push y publica».)*
+
+### 1. La petición tal como se ha entendido
+
+Subir el commit `a6558fe` (texto de Homebrew en la ventana de actualización) y
+publicar una versión. **Confirmación:** petición explícita del autor.
+
+### 2. Preguntas y respuestas
+
+- Ninguna.
+
+### 3. Fuentes analizadas
+
+- `main` en `a6558fe`.
+
+### 4. Decisiones
+
+- Release `v1.2.2` (sha256 `f98e4ceb…dfe67e28`), cask actualizado y notas
+  escritas a mano.
+
+### 5. Alternativas descartadas
+
+- Ninguna.
+
+### 6. Pendiente de comprobar
+
+- Con la 1.2.1 instalada, probar «Actualizar con Homebrew» hacia la 1.2.2: es la
+  primera vez que el botón lleva `brew update` delante.
