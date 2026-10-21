@@ -104,9 +104,11 @@ mkdir -p "$TAP_DIR/Casks"
 sed -e "s/__VERSION__/$VERSION/" -e "s/__SHA256__/$SHA256/" -e "s#__REPO__#$REPO#g" \
   packaging/gitswitcher.rb.template > "$TAP_DIR/Casks/gitswitcher.rb"
 
-# El commit del tap queda a nombre de quien tengas en tu git (user.name/email).
+# El commit del tap lleva el mismo autor que este repositorio (su git config
+# local), no el global: así no se cuela, por ejemplo, un correo del trabajo.
 git -C "$TAP_DIR" add Casks/gitswitcher.rb
-git -C "$TAP_DIR" commit --quiet -m "gitswitcher $VERSION"
+git -C "$TAP_DIR" -c user.name="$(git config user.name)" -c user.email="$(git config user.email)" \
+  commit --quiet -m "gitswitcher $VERSION"
 git -C "$TAP_DIR" push --quiet
 
 echo
