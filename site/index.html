@@ -262,8 +262,11 @@ section { padding: 64px 0; border-top: 1px solid var(--line); }
 h2 { margin: 12px 0 14px; font: 700 clamp(28px, 4vw, 40px)/1.1 var(--mono); letter-spacing: -.035em; }
 .section-lede { color: var(--ink-2); max-width: 40em; margin: 0 0 36px; font-size: 17px; }
 
-.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-@media (max-width: 820px) { .cards { grid-template-columns: 1fr; } }
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
+/* Fila de idiomas bajo los requisitos */
+.langs { margin: -12px 0 28px; color: var(--ink-2); font-size: 15px; }
+.langs b { color: var(--ink); }
 .card { padding: 22px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
 .card h3 { margin: 0 0 8px; font: 700 17px/1.3 var(--sans); }
 .card p { margin: 0; color: var(--ink-2); font-size: 15px; }
@@ -466,7 +469,12 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
         <div class="card">
           <div class="ico"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 3h12v2H2zm0 4h8v2H2zm0 4h5v2H2z"/></svg></div>
           <h3><span lang="en">Small on purpose</span><span lang="es">Pequeña a propósito</span></h3>
-          <p><span lang="en">One menu, one settings window, no background services. English and Spanish.</span><span lang="es">Un menú, una ventana de ajustes y nada en segundo plano. En inglés y español.</span></p>
+          <p><span lang="en">One menu, one settings window, no background services. In 9 languages.</span><span lang="es">Un menú, una ventana de ajustes y nada en segundo plano. En 9 idiomas.</span></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 0 0 0 13c.9 0 1.4-.6 1.4-1.3 0-.4-.2-.7-.4-1-.2-.2-.3-.5-.3-.8 0-.7.5-1.2 1.2-1.2h1.4a3.2 3.2 0 0 0 3.2-3.2C14.5 4 11.6 1.5 8 1.5zM4.5 8.6a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm1.6-3a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm3.8 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm1.7 3a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg></div>
+          <h3><span lang="en">Make it yours</span><span lang="es">Hazla tuya</span></h3>
+          <p><span lang="en">An icon and a color per account — a blue briefcase for work, a green house for personal — so you know which one is active at a glance.</span><span lang="es">Un icono y un color por cuenta — un maletín azul para el trabajo, una casa verde para lo personal — para saber de un vistazo cuál está activa.</span></p>
         </div>
       </div>
     </div>
@@ -481,6 +489,8 @@ footer a:hover { color: var(--ink); text-decoration: underline; }
         <div class="req"><span class="tick">✓</span><div><b>macOS 14 Sonoma</b><span lang="en">or later, Apple Silicon or Intel.</span><span lang="es">o posterior, Apple Silicon o Intel.</span></div></div>
         <div class="req"><span class="tick">✓</span><div><b>GitHub CLI (gh)</b><span lang="en">with at least one account signed in. The <a href="#setup">setup steps</a> cover it.</span><span lang="es">con al menos una cuenta con sesión iniciada. Lo explican los <a href="#setup">pasos de configuración</a>.</span></div></div>
       </div>
+
+      <p class="langs"><b><span lang="en">Languages:</span><span lang="es">Idiomas:</span></b> English, Español, Français, Deutsch, Italiano, Português (Brasil), 日本語, 简体中文, 한국어.</p>
 
       <div class="install">
         <div class="panel">

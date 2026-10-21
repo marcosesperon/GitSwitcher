@@ -1109,3 +1109,40 @@ publicar una versión. **Confirmación:** petición explícita del autor.
 
 - Con la 1.2.1 instalada, probar «Actualizar con Homebrew» hacia la 1.2.2: es la
   primera vez que el botón lleva `brew update` delante.
+
+## 2026-10-21 — Web al día con las últimas novedades
+
+*(Revisión pedida por el autor: «¿has documentado las últimas novedades en el
+README y el index.html?».)*
+
+### 1. La petición tal como se ha entendido
+
+Revisar README e `index.html`; el README estaba al día, la web no. Hacer los dos
+cambios propuestos y publicar. **Confirmación:** «sí, haz los dos cambios y
+publica».
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Actualizar la tarjeta de idiomas (decía solo inglés y español) y añadir
+una tarjeta para el icono y color por cuenta?
+**R1.** Sí, los dos.
+
+### 3. Fuentes analizadas
+
+- `README.md` y `site/index.html` en `5cda171`.
+
+### 4. Decisiones
+
+- Tarjeta «Pequeña a propósito»: «En 9 idiomas».
+- Línea «Idiomas:» bajo los requisitos, con cada idioma en su propio nombre
+  (English, Español, Français… 日本語, 简体中文, 한국어).
+- Cuarta tarjeta «Hazla tuya» (icono y color por cuenta); las tarjetas pasan a
+  cuadrícula 2×2 (una columna en móvil).
+
+### 5. Alternativas descartadas
+
+- **Cuatro tarjetas en una fila.** Demasiado estrechas para el texto.
+
+### 6. Pendiente de comprobar
+
+- Nada.
