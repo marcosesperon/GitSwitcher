@@ -450,3 +450,120 @@ el autor eligió «Sí, v1.0.0».
   taps no oficiales; al instalar el cask por su nombre completo lo añadió solo a
   `trust.json`. Vigilar si en futuras versiones de Homebrew hay que pedir
   `brew trust` explícito y, si es así, documentarlo en el README.
+
+## 2026-10-21 — Página de presentación para GitHub Pages
+
+### 1. La petición tal como se ha entendido
+
+**Página web de GitSwitcher** en `site/index.html`, una sola página estática
+(HTML + CSS + un poco de JS, sin dependencias externas), publicada en
+`https://marcosesperon.github.io/GitSwitcher/`.
+
+- **Idiomas:** inglés y español en la misma página, con selector EN/ES; por
+  defecto, el idioma del navegador (y se recuerda la elección).
+- **Contenido**, de arriba abajo:
+  1. **Presentación:** nombre, frase corta, botón de instalación con Homebrew y de
+     descarga (Releases), y el menú de la barra recreado en HTML/CSS con cuentas
+     ficticias.
+  2. **Qué hace y por qué:** se apoya en gh, no guarda tokens, se sincroniza con la
+     terminal.
+  3. **Requisitos:** macOS 14+, GitHub CLI.
+  4. **Instalación:** Homebrew (con el comando) y manual (zip + cómo abrir una app
+     sin firmar).
+  5. **Configuración paso a paso**, con botón «Copiar» en cada comando:
+     `brew install gh` → `gh auth login` (una vez por cuenta) →
+     `gh auth setup-git` → (opcional) autor de los commits, por la opción de la
+     app o con `includeIf` (ejemplo incluido).
+  6. **Ajustes:** capturas de las pestañas General, Cuentas y Guía.
+  7. **Pie:** licencia MIT, enlace al repositorio, versión.
+- **Capturas:** reales, de la ventana de ajustes con datos ficticios (cuentas
+  `octo-*`, rutas genéricas), en modo claro y oscuro, EN y ES; la página muestra
+  la que toca según idioma y tema del visitante. Se regeneran con
+  `scripts/screenshots.sh` (test aparte que no se ejecuta con los normales y no
+  consulta gh).
+- **Publicación:** flujo de GitHub Actions que publica solo `site/` al cambiar;
+  activar Pages; *website* del repo y enlace en el README. Antes de publicar, el
+  autor revisa la página en local.
+
+**Confirmación:** confirmado por el autor el 2026-10-21 («dale»).
+
+Punto de partida: un `index.html` publicable en GitHub Pages que presente la app,
+explique qué hace y cómo configurarla (requisitos y comandos), con capturas en
+las que no aparezcan datos personales del autor.
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Idioma de la página: solo inglés, EN+ES en la misma página con selector,
+o dos páginas?
+**R1.** Inglés y español en la misma página, con selector EN/ES (por defecto, el
+idioma del navegador).
+
+**P2.** ¿Desde dónde se publica: carpeta `site/` con GitHub Actions, `docs/`, o
+rama `gh-pages`?
+**R2.** Carpeta `site/` publicada con GitHub Actions.
+
+**P3.** ¿Capturas reales con datos ficticios, todo redibujado en HTML/CSS, o
+capturas hechas por el autor?
+**R3.** Capturas reales de los ajustes con cuentas ficticias (claro/oscuro,
+EN/ES); el menú de la barra, redibujado en HTML/CSS.
+
+**P4.** ¿Las capturas se generan una vez o quedan preparadas para regenerarlas?
+**R4.** Preparadas: test de capturas que solo se ejecuta bajo demanda
+(`scripts/screenshots.sh`) y escribe en `site/img/`.
+
+**P5.** ¿Se activa GitHub Pages y se publica al terminar?
+**R5.** Sí: activar Pages (fuente GitHub Actions), push, web en
+`https://marcosesperon.github.io/GitSwitcher/`, *website* del repo y enlace en el
+README. Antes, revisión en local por el autor.
+
+### 3. Fuentes analizadas
+
+- Repo en `2344ef8` (v1.0.0 publicada). README en inglés; `docs/` contiene
+  `decisiones.md` y `documentacion.md`.
+
+### 4. Decisiones
+
+- **Una sola página bilingüe con selector EN/ES.** Por qué: la app ya es bilingüe
+  y un único fichero es más fácil de mantener.
+- **Web en `site/`, desplegada con GitHub Actions** (solo esa carpeta). Por qué:
+  publicar desde `docs/` convertiría `decisiones.md` y `documentacion.md` en
+  páginas públicas de la web.
+- **Capturas reales con datos ficticios.** Ventanas de ajustes renderizadas desde
+  la app con un store de ejemplo (cuentas `octo-*`), en claro/oscuro y EN/ES. El
+  menú de la barra (NSMenu, difícil de capturar de forma automática) se recrea en
+  HTML/CSS. Por qué: fidelidad real sin exponer datos del autor.
+- **Capturas reproducibles con `scripts/screenshots.sh`.** El test no consulta gh:
+  usa solo datos ficticios, así que no puede colarse una cuenta real.
+
+- **Plan aprobado el 2026-10-21** («dale»). Detalles de la implementación:
+  - Diseño: la navegación es una barra de menús de macOS funcional; el icono de
+    GitSwitcher despliega una demo con cuentas `octo-*` y una terminal al lado
+    enseña el `gh auth switch` equivalente. Tipografía monoespaciada del sistema
+    en titulares (sin fuentes externas), acento verde de «cuenta activa».
+  - Capturas: `cacheDisplay` deja transparente la zona de pestañas y en oscuro
+    no se veían; se pinta debajo el color de fondo de ventana del tema.
+  - `?lang=es|en` en la URL fuerza idioma (surgió para poder revisar con Chrome
+    sin ventana, y sirve para compartir enlaces).
+  - Revisión: Chrome sin ventana en claro/oscuro, EN/ES y a 390 px (dentro de un
+    iframe, porque Chrome sin ventana no baja de ~500 px).
+- **Visto bueno del autor tras revisar en local** («me parece bien»).
+
+### 5. Alternativas descartadas
+
+- **Solo inglés.** Deja fuera el español, que la app ya soporta.
+- **Dos páginas (`index.html` + `es/index.html`).** Algo mejor para buscadores,
+  pero duplica el contenido a mantener.
+- **Publicar desde `docs/`.** Expondría los documentos internos como páginas.
+- **Rama `gh-pages`.** Aislada pero fácil de dejar desactualizada.
+- **Todo redibujado en HTML/CSS.** Ligero, pero no es la app real y se desfasa.
+- **Capturas manuales del autor.** Riesgo de que se cuele un dato personal y no
+  son reproducibles.
+- **Dejarla solo preparada sin publicar.** El autor prefiere publicarla ya, tras
+  revisarla en local.
+- **Capturas generadas una sola vez.** Se desfasan con el primer cambio de UI.
+
+### 6. Pendiente de comprobar
+
+- El interruptor «Abrir al iniciar sesión» de la captura General refleja el
+  estado real del Mac donde se generan las capturas (no es dato personal; se
+  comentó al autor por si prefiere fijarlo apagado).

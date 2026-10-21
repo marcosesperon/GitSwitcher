@@ -2,6 +2,8 @@
 
 A tiny macOS menu bar app to switch between your [GitHub CLI](https://cli.github.com) (`gh`) accounts.
 
+**Website:** <https://marcosesperon.github.io/GitSwitcher/>
+
 It shows the active account in the menu bar and lets you switch to another one with a click — the same as running `gh auth switch --user <account>`, without opening a terminal.
 
 ## Why

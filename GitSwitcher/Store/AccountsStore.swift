@@ -258,3 +258,16 @@ final class AccountsStore {
         }
     }
 }
+
+#if DEBUG
+extension AccountsStore {
+    /// Solo para el test de capturas de la web: carga cuentas y estado de la guía
+    /// inventados, sin preguntar nada a gh. Así es imposible que una captura
+    /// enseñe cuentas reales. No existe en la versión publicada (Release).
+    func loadSampleData(accounts: [GhAccount], setup: SetupStatus) {
+        allAccounts = accounts
+        self.setup = setup
+        status = .ready
+    }
+}
+#endif

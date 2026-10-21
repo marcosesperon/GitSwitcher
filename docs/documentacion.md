@@ -118,6 +118,47 @@ mientras dura.
 El cask sale de `packaging/gitswitcher.rb.template`. Como la app no está firmada
 con Developer ID, el cask le quita la cuarentena tras instalarla.
 
+### Web (GitHub Pages)
+
+La web de presentación vive en `site/` y se publica en
+<https://marcosesperon.github.io/GitSwitcher/>.
+
+- **`site/index.html`**: una sola página, sin librerías externas, con el CSS y el
+  JS dentro. Todos los textos están dos veces (`<span lang="en">` y
+  `<span lang="es">`) y el CSS enseña solo el idioma elegido. El idioma sale del
+  navegador, se recuerda si el visitante lo cambia y se puede forzar con
+  `?lang=es` o `?lang=en` en la dirección.
+- La barra de navegación imita la barra de menús de macOS y el icono de
+  GitSwitcher es una demo que funciona: al cambiar de cuenta, la terminal de al
+  lado enseña el `gh auth switch` equivalente. Todo con cuentas inventadas.
+- La versión del pie se pide a la API de GitHub (última release); si falla, no
+  sale número.
+- **Publicación:** `.github/workflows/pages.yml` sube `site/` a Pages cada vez que
+  cambia en `main` (o a mano desde la pestaña Actions).
+
+Para verla en local:
+
+```sh
+cd site && python3 -m http.server 8000   # y abrir http://localhost:8000
+```
+
+### Capturas de la web
+
+Las capturas de los ajustes (`site/img/settings-<pestaña>-<idioma>-<tema>.png`)
+se regeneran con:
+
+```sh
+scripts/screenshots.sh
+```
+
+Lanza el test `ScreenshotTests` dos veces (inglés y español). Ese test no corre
+con los tests normales: solo cuando el script le pasa la variable
+`GITSWITCHER_SCREENSHOTS_DIR`. Usa cuentas inventadas (`octo-work`,
+`octo-personal`) cargadas con `AccountsStore.loadSampleData`, que solo existe en
+compilaciones Debug y nunca pregunta a gh, así que en las capturas no puede salir
+ninguna cuenta real. Las preferencias van a un dominio temporal de
+`UserDefaults`, sin tocar las del usuario.
+
 ### Icono
 
 `swift scripts/make-icon.swift` vuelve a generar todas las medidas del icono en

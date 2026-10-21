@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitSwitcher — switch GitHub CLI accounts from the menu bar</title>
+<meta name="description" content="A tiny macOS menu bar app to switch between your GitHub CLI (gh) accounts with one click. No tokens stored.">
+<meta property="og:title" content="GitSwitcher">
+<meta property="og:description" content="Switch between your GitHub CLI (gh) accounts from the macOS menu bar.">
+<meta property="og:image" content="https://marcosesperon.github.io/GitSwitcher/img/icon.png">
+<meta property="og:url" content="https://marcosesperon.github.io/GitSwitcher/">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/icon.png">
+<style>
+/* ------------------------------------------------------------------
+   Colores: papel claro de día, escritorio de noche. Todo sale de aquí.
+   ------------------------------------------------------------------ */
+:root {
+  --bg: #f4f2ee;
+  --bg-grid: rgba(20, 24, 30, .045);
+  --surface: #ffffff;
+  --surface-2: #ebe8e2;
+  --ink: #15181d;
+  --ink-2: #4b515b;
+  --ink-3: #7c828c;
+  --line: rgba(20, 24, 30, .12);
+  --accent: #1f883d;          /* verde «cuenta activa» */
+  --accent-ink: #ffffff;
+  --amber: #b35900;
+  --menubar: rgba(246, 246, 246, .78);
+  --menubar-ink: #1d1d1f;
+  --menu: rgba(246, 246, 246, .9);
+  --menu-hover: #0a64d6;
+  --term-bg: #101317;
+  --term-ink: #d6dde6;
+  --term-dim: #6c7683;
+  --shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 24px 60px -24px rgba(20, 24, 30, .35);
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1014;
+    --bg-grid: rgba(214, 221, 230, .04);
+    --surface: #161a20;
+    --surface-2: #1d222a;
+    --ink: #e8ecf1;
+    --ink-2: #a9b1bc;
+    --ink-3: #6f7884;
+    --line: rgba(214, 221, 230, .1);
+    --accent: #3fb950;
+    --accent-ink: #07130a;
+    --amber: #e3a54a;
+    --menubar: rgba(28, 30, 34, .72);
+    --menubar-ink: #f2f2f2;
+    --menu: rgba(40, 42, 46, .9);
+    --menu-hover: #0a64d6;
+    --term-bg: #07090c;
+    --shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 30px 70px -30px rgba(0, 0, 0, .8);
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background:
+    linear-gradient(var(--bg-grid) 1px, transparent 1px) 0 0 / 100% 32px,
+    var(--bg);
+  color: var(--ink);
+  font: 16px/1.6 var(--sans);
+  overflow-x: hidden;
+}
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+code, pre, kbd { font-family: var(--mono); }
+
+/* Idiomas: cada texto existe en inglés y español; solo se ve el elegido. */
+html[data-lang="en"] [lang="es"]:not(html),
+html[data-lang="es"] [lang="en"]:not(html) { display: none !important; }
+
+.wrap { width: min(1080px, 100% - 32px); margin-inline: auto; }
+
+/* ------------------------------------------------------------------
+   Barra de menú de macOS (es la navegación de la web)
+   ------------------------------------------------------------------ */
+.menubar {
+  position: sticky; top: 0; z-index: 20;
+  height: 30px;
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 10px;
+  background: var(--menubar);
+  color: var(--menubar-ink);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--line);
+  font: 500 13px/1 var(--sans);
+  user-select: none;
+}
+.menubar .item {
+  padding: 0 9px; height: 22px; display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 5px; border: 0; background: none; color: inherit; font: inherit; cursor: default;
+  text-decoration: none;
+}
+.menubar a.item, .menubar button.item { cursor: pointer; }
+.menubar a.item:hover, .menubar button.item:hover, .menubar .item[aria-expanded="true"] { background: rgba(127,127,127,.22); }
+.menubar .brand { font-weight: 700; }
+.menubar .spacer { flex: 1; }
+.menubar .clock { font-variant-numeric: tabular-nums; }
+.menubar svg { width: 16px; height: 16px; flex: none; }
+.menubar .only-wide { display: inline-flex; }
+@media (max-width: 720px) { .menubar .only-wide { display: none; } }
+
+.lang-switch { display: inline-flex; gap: 2px; }
+.lang-switch button { font-weight: 600; letter-spacing: .02em; }
+.lang-switch button[aria-pressed="true"] { background: rgba(127,127,127,.22); }
+
+/* Menú desplegable de GitSwitcher */
+.gs { position: relative; }
+.gs-menu {
+  position: absolute; right: 0; top: 26px;
+  min-width: 250px; padding: 5px;
+  background: var(--menu);
+  -webkit-backdrop-filter: blur(30px); backdrop-filter: blur(30px);
+  border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 18px 50px -12px rgba(0,0,0,.45);
+  font: 400 13px/1 var(--sans);
+  opacity: 0; transform: translateY(-4px) scale(.98); transform-origin: top right;
+  pointer-events: none; transition: opacity .14s, transform .14s;
+}
+.gs[data-open="true"] .gs-menu { opacity: 1; transform: none; pointer-events: auto; }
+.gs-menu .hdr { padding: 6px 10px 4px; font-size: 11px; font-weight: 600; color: var(--ink-3); }
+.gs-menu .row {
+  display: flex; align-items: center; gap: 6px; width: 100%;
+  padding: 5px 10px; border: 0; border-radius: 5px; background: none; color: inherit;
+  font: inherit; text-align: left; cursor: pointer;
+}
+.gs-menu .row:hover { background: var(--menu-hover); color: #fff; }
+.gs-menu .row .check { width: 12px; visibility: hidden; }
+.gs-menu .row[aria-checked="true"] .check { visibility: visible; }
+.gs-menu .row .login { opacity: .6; }
+.gs-menu .sep { height: 1px; margin: 5px 10px; background: var(--line); }
+.gs-menu .key { margin-left: auto; opacity: .55; }
+
+/* ------------------------------------------------------------------
+   Portada
+   ------------------------------------------------------------------ */
+.hero { padding: 88px 0 56px; }
+.hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+@media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } .hero { padding-top: 56px; } }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3);
+}
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); }
+h1 {
+  margin: 18px 0 20px;
+  font: 700 clamp(40px, 6.4vw, 72px)/1.02 var(--mono);
+  letter-spacing: -.045em;
+}
+h1 .swap { color: var(--accent); }
+.lede { font-size: 19px; color: var(--ink-2); max-width: 34em; margin: 0 0 30px; }
+.lede code { font-size: .92em; color: var(--ink); }
+
+.cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 16px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); text-decoration: none;
+  font: 600 15px/1 var(--sans); cursor: pointer; transition: transform .12s, box-shadow .12s;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px -10px rgba(0,0,0,.35); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn svg { width: 16px; height: 16px; }
+
+/* Línea de comando con botón copiar */
+.cmd {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  padding: 6px 6px 6px 14px; border-radius: 10px;
+  background: var(--term-bg); color: var(--term-ink);
+  font: 14px/1.4 var(--mono); border: 1px solid rgba(255,255,255,.06);
+}
+.cmd code { flex: 1; min-width: 0; overflow-wrap: anywhere; font-variant-ligatures: none; }
+.cmd code::before { content: "$ "; color: var(--term-dim); }
+.copy {
+  flex: none; padding: 6px 10px; border-radius: 7px; border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06); color: var(--term-ink); font: 600 12px/1 var(--sans); cursor: pointer;
+}
+.copy:hover { background: rgba(255,255,255,.14); }
+.copy.done { color: #3fb950; border-color: rgba(63,185,80,.5); }
+.hero .cmd { margin-top: 18px; max-width: 520px; }
+
+/* Terminal de la demo */
+.terminal {
+  border-radius: 14px; overflow: hidden; background: var(--term-bg); color: var(--term-ink);
+  box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,.06);
+  font: 13.5px/1.7 var(--mono);
+}
+.terminal .bar { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: rgba(255,255,255,.04); }
+.terminal .bar i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.terminal .bar i:nth-child(2) { background: #febc2e; }
+.terminal .bar i:nth-child(3) { background: #28c840; }
+.terminal .bar span { margin-left: 8px; color: var(--term-dim); font-size: 12px; }
+.terminal pre { margin: 0; padding: 16px 18px 20px; white-space: pre-wrap; word-break: break-word; min-height: 228px; }
+.t-dim { color: var(--term-dim); }
+.t-ok { color: #3fb950; }
+.t-acc { color: #79c0ff; }
+.t-amber { color: #e3a54a; }
+.caret { display: inline-block; width: 8px; height: 1.1em; vertical-align: -2px; background: var(--term-ink); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.hint { margin-top: 14px; font-size: 14px; color: var(--ink-3); display: flex; align-items: center; gap: 8px; }
+.hint svg { width: 16px; height: 16px; flex: none; animation: nudge 1.6s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateY(-3px); } }
+
+/* ------------------------------------------------------------------
+   Secciones
+   ------------------------------------------------------------------ */
+section { padding: 64px 0; border-top: 1px solid var(--line); }
+.label { font: 600 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+h2 { margin: 12px 0 14px; font: 700 clamp(28px, 4vw, 40px)/1.1 var(--mono); letter-spacing: -.035em; }
+.section-lede { color: var(--ink-2); max-width: 40em; margin: 0 0 36px; font-size: 17px; }
+
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 820px) { .cards { grid-template-columns: 1fr; } }
+.card { padding: 22px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.card h3 { margin: 0 0 8px; font: 700 17px/1.3 var(--sans); }
+.card p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.card .ico { width: 34px; height: 34px; margin-bottom: 14px; display: grid; place-items: center; border-radius: 9px; background: var(--surface-2); color: var(--accent); }
+.card .ico svg { width: 18px; height: 18px; }
+
+.reqs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 720px) { .reqs { grid-template-columns: 1fr; } }
+.req { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.req b { display: block; font-size: 16px; }
+.req span { color: var(--ink-2); font-size: 15px; }
+.req .tick { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font: 700 13px/1 var(--sans); margin-top: 2px; }
+
+/* Instalación: dos columnas */
+.install { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 820px) { .install { grid-template-columns: 1fr; } }
+.panel { padding: 24px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+.panel h3 { margin: 0 0 6px; font: 700 18px/1.3 var(--sans); display: flex; align-items: center; gap: 10px; }
+.panel .tag { font: 600 11px/1 var(--mono); padding: 4px 7px; border-radius: 6px; background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+.panel p { color: var(--ink-2); font-size: 15px; margin: 0 0 14px; }
+.panel ol { margin: 0 0 14px; padding-left: 20px; color: var(--ink-2); font-size: 15px; }
+.panel .cmd + .cmd { margin-top: 8px; }
+.note { font-size: 14px !important; color: var(--ink-3) !important; margin-top: 14px !important; }
+
+/* Pasos de configuración: línea de tiempo */
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+.step { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 0 16px; padding-bottom: 34px; }
+.step:last-child { padding-bottom: 0; }
+.step::before {
+  counter-increment: step; content: counter(step);
+  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--line); font: 700 16px/1 var(--mono); color: var(--accent);
+  position: relative; z-index: 1;
+}
+.step::after { content: ""; position: absolute; left: 19.5px; top: 44px; bottom: 4px; width: 1px; background: var(--line); }
+.step:last-child::after { display: none; }
+.step > div { min-width: 0; }
+.step h3 { margin: 6px 0 6px; font: 700 18px/1.3 var(--sans); }
+.step h3 small { font: 600 11px/1 var(--mono); color: var(--amber); letter-spacing: .06em; text-transform: uppercase; margin-left: 6px; vertical-align: 2px; }
+.step p { margin: 0 0 12px; color: var(--ink-2); font-size: 15px; max-width: 46em; }
+.step .cmd { max-width: 560px; }
+.snippet {
+  margin: 12px 0 0; padding: 14px 16px; border-radius: 10px; background: var(--term-bg); color: var(--term-ink);
+  font: 13px/1.6 var(--mono); overflow-x: auto; max-width: 560px;
+}
+
+/* Capturas de los ajustes */
+.shots-tabs { display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--surface-2); margin-bottom: 22px; flex-wrap: wrap; }
+.shots-tabs button { border: 0; background: none; color: var(--ink-2); padding: 7px 14px; border-radius: 8px; font: 600 14px/1 var(--sans); cursor: pointer; }
+.shots-tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.shots { display: grid; grid-template-columns: minmax(0, 520px) 1fr; gap: 40px; align-items: start; }
+@media (max-width: 880px) { .shots { grid-template-columns: 1fr; } }
+.shot-frame { border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); background: var(--surface); }
+.shot-frame img { width: 100%; height: auto; }
+.shot-text h3 { margin: 4px 0 8px; font: 700 20px/1.3 var(--sans); }
+.shot-text p { margin: 0 0 12px; color: var(--ink-2); font-size: 15px; }
+.shot-text ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 15px; }
+.shot-text li { margin-bottom: 6px; }
+[data-panel][hidden] { display: none; }
+
+footer { padding: 36px 0 56px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between; }
+footer .brand { display: flex; align-items: center; gap: 10px; color: var(--ink-2); font-weight: 600; }
+footer .brand img { width: 28px; height: 28px; }
+footer nav { display: flex; gap: 18px; flex-wrap: wrap; }
+footer a { color: var(--ink-2); text-decoration: none; }
+footer a:hover { color: var(--ink); text-decoration: underline; }
+
+/* Entrada escalonada de la portada */
+.rise { opacity: 0; transform: translateY(10px); animation: rise .6s cubic-bezier(.2,.7,.2,1) forwards; }
+.rise:nth-child(2) { animation-delay: .07s; } .rise:nth-child(3) { animation-delay: .14s; }
+.rise:nth-child(4) { animation-delay: .21s; } .rise:nth-child(5) { animation-delay: .28s; }
+@keyframes rise { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; opacity: 1; transform: none; }
+  .caret, .hint svg { animation: none; }
+  html { scroll-behavior: auto; }
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Barra de menú: navegación de la web y demo del menú de GitSwitcher -->
+<nav class="menubar" aria-label="Main">
+  <span class="item" aria-hidden="true">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.2 8.5c0-1.7 1.4-2.5 1.5-2.5-.8-1.2-2-1.3-2.5-1.3-1-.1-2 .6-2.6.6-.5 0-1.3-.6-2.2-.6-1.1 0-2.2.7-2.8 1.7-1.2 2.1-.3 5.1.9 6.8.6.8 1.2 1.7 2.1 1.7.8 0 1.2-.5 2.2-.5s1.3.5 2.2.5c.9 0 1.5-.8 2-1.7.7-1 .9-1.9.9-2-.1 0-1.7-.7-1.7-2.7zM9.6 3.5c.5-.6.8-1.4.7-2.2-.7 0-1.5.5-2 1.1-.4.5-.8 1.3-.7 2.1.8.1 1.5-.4 2-1z"/></svg>
+  </span>
+  <a class="item brand" href="#top">GitSwitcher</a>
+  <a class="item only-wide" href="#install"><span lang="en">Install</span><span lang="es">Instalar</span></a>
+  <a class="item only-wide" href="#setup"><span lang="en">Setup</span><span lang="es">Configurar</span></a>
+  <a class="item only-wide" href="#settings"><span lang="en">Settings</span><span lang="es">Ajustes</span></a>
+  <a class="item only-wide" href="https://github.com/marcosesperon/GitSwitcher">GitHub</a>
+  <span class="spacer"></span>
+
+  <span class="lang-switch" role="group" aria-label="Language">
+    <button class="item" type="button" data-set-lang="en" aria-pressed="true">EN</button>
+    <button class="item" type="button" data-set-lang="es" aria-pressed="false">ES</button>
+  </span>
+
+  <!-- El «status item» de GitSwitcher: se puede pulsar -->
+  <span class="gs" id="gs" data-open="false">
+    <button class="item" type="button" id="gs-button" aria-haspopup="menu" aria-expanded="false" aria-controls="gs-menu">
+      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 3a2.3 2.3 0 1 1 0 4.6A2.3 2.3 0 0 1 8 4zm0 9.6a5.6 5.6 0 0 1-4.2-1.9c.6-1.3 2.3-2.1 4.2-2.1s3.6.8 4.2 2.1A5.6 5.6 0 0 1 8 13.6z"/></svg>
+      <span id="gs-label">Work</span>
+    </button>
+    <div class="gs-menu" id="gs-menu" role="menu" aria-labelledby="gs-button">
+      <div class="hdr">github.com</div>
+      <button class="row" role="menuitemradio" data-login="octo-work" data-alias="Work" aria-checked="true">
+        <span class="check">✓</span> Work <span class="login">(octo-work)</span>
+      </button>
+      <button class="row" role="menuitemradio" data-login="octo-personal" data-alias="Personal" aria-checked="false">
+        <span class="check">✓</span> Personal <span class="login">(octo-personal)</span>
+      </button>
+      <div class="sep"></div>
+      <button class="row" role="menuitem" data-go="#settings">
+        <span class="check"></span><span lang="en">Settings…</span><span lang="es">Ajustes…</span><span class="key">⌘,</span>
+      </button>
+      <div class="sep"></div>
+      <button class="row" role="menuitem" data-close>
+        <span class="check"></span><span lang="en">Quit GitSwitcher</span><span lang="es">Salir de GitSwitcher</span><span class="key">⌘Q</span>
+      </button>
+    </div>
+  </span>
+
+  <span class="item only-wide" aria-hidden="true">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 12.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zm-3.2-1.6 1 1a3.2 3.2 0 0 1 4.4 0l1-1a4.6 4.6 0 0 0-6.4 0zM2.6 8.4l1 1a6.3 6.3 0 0 1 8.8 0l1-1a7.7 7.7 0 0 0-10.8 0zM.4 6.2l1 1a9.4 9.4 0 0 1 13.2 0l1-1a10.8 10.8 0 0 0-15.2 0z"/></svg>
+  </span>
+  <span class="item clock" id="clock" aria-hidden="true">9:41</span>
+</nav>
+
+<main id="top">
+  <!-- Portada -->
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow rise"><span lang="en">macOS menu bar app · free &amp; open source</span><span lang="es">App de barra de menús · libre y gratuita</span></div>
+        <h1 class="rise">
+          <span lang="en">Switch GitHub accounts <span class="swap">in one click.</span></span>
+          <span lang="es">Cambia de cuenta de GitHub <span class="swap">con un clic.</span></span>
+        </h1>
+        <p class="lede rise">
+          <span lang="en">GitSwitcher shows your active <code>gh</code> account in the menu bar and switches to another one instantly — exactly like <code>gh auth switch</code>, without opening a terminal.</span>
+          <span lang="es">GitSwitcher muestra en la barra de menús tu cuenta activa de <code>gh</code> y cambia a otra al momento — igual que <code>gh auth switch</code>, sin abrir la terminal.</span>
+        </p>
+        <div class="cta rise">
+          <a class="btn primary" href="#install">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 11.5 3.5 7l1-1L7.3 8.8V1.5h1.4v7.3L11.5 6l1 1L8 11.5zM2 13h12v1.5H2z"/></svg>
+            <span lang="en">Install</span><span lang="es">Instalar</span>
+          </a>
+          <a class="btn" href="https://github.com/marcosesperon/GitSwitcher">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0a8 8 0 0 0-2.5 15.6c.4 0 .5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.3 1.9.9 2.4.7 0-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.5 7.5 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3.1-1.9 3.7-3.6 3.9.3.3.6.8.6 1.5v2.2c0 .2.1.5.6.4A8 8 0 0 0 8 0z"/></svg>
+            <span lang="en">Source code</span><span lang="es">Código fuente</span>
+          </a>
+        </div>
+        <div class="cmd rise">
+          <code>brew install --cask marcosesperon/tap/gitswitcher</code>
+          <button class="copy" type="button"><span lang="en">Copy</span><span lang="es">Copiar</span></button>
+        </div>
+      </div>
+
+      <!-- Demo: lo que hace el menú, visto desde la terminal -->
+      <div class="rise">
+        <div class="terminal" aria-live="polite">
+          <div class="bar"><i></i><i></i><i></i><span>~ — zsh</span></div>
+          <pre id="term"></pre>
+        </div>
+        <div class="hint">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1.5 3 7h3.2v7.5h3.6V7H13z"/></svg>
+          <span lang="en">Try it: click <b id="hint-label-en">Work</b> in the menu bar above.</span>
+          <span lang="es">Pruébalo: pulsa <b id="hint-label-es">Work</b> en la barra de arriba.</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Por qué -->
+  <section id="why">
+    <div class="wrap">
+      <div class="label"><span lang="en">Why</span><span lang="es">Por qué</span></div>
+      <h2><span lang="en">A friendly face for gh.</span><span lang="es">Una cara amable para gh.</span></h2>
+      <p class="section-lede">
+        <span lang="en">gh already supports several accounts per host and, as your git credential helper, decides which account <code>git push</code> uses. GitSwitcher just puts that one click away.</span>
+        <span lang="es">gh ya admite varias cuentas por servidor y, como credential helper de git, decide con qué cuenta se hace <code>git push</code>. GitSwitcher solo lo deja a un clic.</span>
+      </p>
+      <div class="cards">
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1 2.5 3.2v4c0 3.4 2.3 6.4 5.5 7.3 3.2-.9 5.5-3.9 5.5-7.3v-4L8 1zm-1 10L4.5 8.5l1-1L7 9l3.5-3.5 1 1L7 11z"/></svg></div>
+          <h3><span lang="en">No tokens stored</span><span lang="es">No guarda tokens</span></h3>
+          <p><span lang="en">Accounts come from <code>gh auth status</code>. Credentials stay in gh's keychain entries; GitSwitcher never sees them.</span><span lang="es">Las cuentas salen de <code>gh auth status</code>. Las credenciales siguen en el llavero de gh; GitSwitcher nunca las ve.</span></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 6.5h-3l1.2-1.2A4.5 4.5 0 0 0 3.6 6.8l-1.4-.4a6 6 0 0 1 10.6-2.2L14 3v3.5h-.5zM2.5 9.5h3l-1.2 1.2a4.5 4.5 0 0 0 8.1-1.5l1.4.4a6 6 0 0 1-10.6 2.2L2 13V9.5h.5z"/></svg></div>
+          <h3><span lang="en">Always in sync</span><span lang="es">Siempre sincronizada</span></h3>
+          <p><span lang="en">Switch from the terminal and the menu bar updates by itself. Sign in a new account and it shows up.</span><span lang="es">Cambia desde la terminal y la barra se actualiza sola. Inicia sesión con otra cuenta y aparece.</span></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 3h12v2H2zm0 4h8v2H2zm0 4h5v2H2z"/></svg></div>
+          <h3><span lang="en">Small on purpose</span><span lang="es">Pequeña a propósito</span></h3>
+          <p><span lang="en">One menu, one settings window, no background services. English and Spanish.</span><span lang="es">Un menú, una ventana de ajustes y nada en segundo plano. En inglés y español.</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Requisitos e instalación -->
+  <section id="install">
+    <div class="wrap">
+      <div class="label"><span lang="en">Install</span><span lang="es">Instalación</span></div>
+      <h2><span lang="en">What you need.</span><span lang="es">Qué necesitas.</span></h2>
+      <div class="reqs" style="margin-bottom:28px">
+        <div class="req"><span class="tick">✓</span><div><b>macOS 14 Sonoma</b><span lang="en">or later, Apple Silicon or Intel.</span><span lang="es">o posterior, Apple Silicon o Intel.</span></div></div>
+        <div class="req"><span class="tick">✓</span><div><b>GitHub CLI (gh)</b><span lang="en">with at least one account signed in. The <a href="#setup">setup steps</a> cover it.</span><span lang="es">con al menos una cuenta con sesión iniciada. Lo explican los <a href="#setup">pasos de configuración</a>.</span></div></div>
+      </div>
+
+      <div class="install">
+        <div class="panel">
+          <h3>Homebrew <span class="tag"><span lang="en">recommended</span><span lang="es">recomendado</span></span></h3>
+          <p><span lang="en">Installs the app and, if missing, GitHub CLI too.</span><span lang="es">Instala la app y, si falta, también GitHub CLI.</span></p>
+          <div class="cmd"><code>brew install --cask marcosesperon/tap/gitswitcher</code><button class="copy" type="button"><span lang="en">Copy</span><span lang="es">Copiar</span></button></div>
+        </div>
+        <div class="panel">
+          <h3><span lang="en">Manual download</span><span lang="es">Descarga manual</span></h3>
+          <ol>
+            <li><span lang="en">Download the latest <code>GitSwitcher-x.y.z.zip</code> from</span><span lang="es">Descarga el último <code>GitSwitcher-x.y.z.zip</code> de</span> <a href="https://github.com/marcosesperon/GitSwitcher/releases/latest">Releases</a>.</li>
+            <li><span lang="en">Unzip it and move <b>GitSwitcher.app</b> to <b>Applications</b>.</span><span lang="es">Descomprímelo y mueve <b>GitSwitcher.app</b> a <b>Aplicaciones</b>.</span></li>
+            <li><span lang="en">The app isn't signed with an Apple Developer ID, so macOS blocks the first launch. Allow it in <b>System Settings › Privacy &amp; Security › Open Anyway</b>, or run:</span><span lang="es">La app no está firmada con un Developer ID de Apple, así que macOS bloquea la primera apertura. Permítela en <b>Ajustes del Sistema › Privacidad y seguridad › Abrir igualmente</b>, o ejecuta:</span></li>
+          </ol>
+          <div class="cmd"><code>xattr -dr com.apple.quarantine /Applications/GitSwitcher.app</code><button class="copy" type="button"><span lang="en">Copy</span><span lang="es">Copiar</span></button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Configuración paso a paso -->
+  <section id="setup">
+    <div class="wrap">
+      <div class="label"><span lang="en">Setup</span><span lang="es">Configuración</span></div>
+      <h2><span lang="en">Get your accounts in the menu.</span><span lang="es">Tus cuentas, en el menú.</span></h2>
+      <p class="section-lede">
+        <span lang="en">Four steps, done once. The app's <b>Settings › Guide</b> checks each one on your Mac and can run the commands for you.</span>
+        <span lang="es">Cuatro pasos que se hacen una vez. En la app, <b>Ajustes › Guía</b> comprueba cada uno en tu Mac y puede lanzar los comandos por ti.</span>
+      </p>
+      <ol class="steps">
+        <li class="step"><div>
+          <h3><span lang="en">Install GitHub CLI</span><span lang="es">Instala GitHub CLI</span></h3>
+          <p><span lang="en">Skip it if you installed GitSwitcher with Homebrew. Other options at</span><span lang="es">Sáltatelo si instalaste GitSwitcher con Homebrew. Otras opciones en</span> <a href="https://cli.github.com">cli.github.com</a>.</p>
+          <div class="cmd"><code>brew install gh</code><button class="copy" type="button"><span lang="en">Copy</span><span lang="es">Copiar</span></button></div>
+        </div></li>
+        <li class="step"><div>
+          <h3><span lang="en">Sign in with each account</span><span lang="es">Inicia sesión con cada cuenta</span></h3>
+          <p><span lang="en">Run it once per GitHub account (work, personal…). gh opens the browser and keeps the credentials in the macOS keychain. In the app: <b>Settings › Accounts › Add Account…</b></span><span lang="es">Ejecútalo una vez por cada cuenta de GitHub (trabajo, personal…). gh abre el navegador y guarda las credenciales en el llavero de macOS. En la app: <b>Ajustes › Cuentas › Añadir cuenta…</b></span></p>
+          <div class="cmd"><code>gh auth login</code><button class="copy" type="button"><span lang="en">Copy</span><span lang="es">Copiar</span></button></div>
+        </div></li>
+        <li class="step"><div>
+          <h3><span lang="en">Let git use the active account</span><span lang="es">Haz que git use la cuenta activa</span></h3>
+          <p><span lang="en">Makes gh provide the credentials for <code>git push</code> and <code>pull</code> on github.com, so they follow the account you pick in the menu.</span><span lang="es">Hace que gh dé las credenciales para <code>git push</code> y <code>pull</code> en github.com, así siguen a la cuenta que elijas en el menú.</span></p>
+          <div class="cmd"><code>gh auth setup-git</code><button class="copy" type="button"><span lang="en">Copy</span><span lang="es">Copiar</span></button></div>
+        </div></li>
+        <li class="step"><div>
+          <h3><span lang="en">Commit author</span><span lang="es">Autor de los commits</span><small><span lang="en">optional</span><span lang="es">opcional</span></small></h3>
+          <p><span lang="en">Switching accounts doesn't change who signs your commits. Either turn on <b>Settings › Accounts › Also change the git author when switching</b>, or set the author per folder with <code>includeIf</code>:</span><span lang="es">Cambiar de cuenta no cambia quién firma tus commits. O activas <b>Ajustes › Cuentas › Cambiar también el autor de git</b>, o fijas el autor por carpeta con <code>includeIf</code>:</span></p>
+<pre class="snippet"><span class="t-dim"># ~/.gitconfig</span>
+[includeIf <span class="t-amber">"gitdir:~/work/"</span>]
+    path = <span class="t-acc">~/.gitconfig-work</span>
+
+<span class="t-dim"># ~/.gitconfig-work</span>
+[user]
+    name  = <span class="t-amber">Octo Cat</span>
+    email = <span class="t-amber">octo@work.example</span></pre>
+        </div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Ajustes con capturas reales (datos de ejemplo) -->
+  <section id="settings">
+    <div class="wrap">
+      <div class="label"><span lang="en">Settings</span><span lang="es">Ajustes</span></div>
+      <h2><span lang="en">Three tabs, nothing more.</span><span lang="es">Tres pestañas, nada más.</span></h2>
+      <div class="shots-tabs" role="tablist" aria-label="Settings tabs">
+        <button role="tab" aria-selected="true" data-tab="guide"><span lang="en">Guide</span><span lang="es">Guía</span></button>
+        <button role="tab" aria-selected="false" data-tab="accounts"><span lang="en">Accounts</span><span lang="es">Cuentas</span></button>
+        <button role="tab" aria-selected="false" data-tab="general">General</button>
+      </div>
+      <div class="shots">
+        <div class="shot-frame">
+          <img id="shot" data-shot="guide" alt="GitSwitcher settings" width="1040" height="1228" loading="lazy">
+        </div>
+        <div class="shot-text">
+          <div data-panel="guide">
+            <h3><span lang="en">Guide</span><span lang="es">Guía</span></h3>
+            <p><span lang="en">Checks your Mac step by step and tells you what's missing.</span><span lang="es">Comprueba tu Mac paso a paso y te dice qué falta.</span></p>
+            <ul>
+              <li><span lang="en">gh installed (version and path).</span><span lang="es">gh instalado (versión y ruta).</span></li>
+              <li><span lang="en">Accounts signed in to gh.</span><span lang="es">Cuentas con sesión en gh.</span></li>
+              <li><span lang="en">git using gh for credentials.</span><span lang="es">git usando gh para las credenciales.</span></li>
+              <li><span lang="en"><b>Copy</b> or <b>Open in Terminal</b> for every command.</span><span lang="es"><b>Copiar</b> o <b>Abrir en Terminal</b> en cada comando.</span></li>
+            </ul>
+          </div>
+          <div data-panel="accounts" hidden>
+            <h3><span lang="en">Accounts</span><span lang="es">Cuentas</span></h3>
+            <p><span lang="en">Give each account a short name for the menu bar and add new ones.</span><span lang="es">Pon a cada cuenta un nombre corto para la barra y añade cuentas nuevas.</span></p>
+            <ul>
+              <li><span lang="en">Alias per account (“Work”, “Personal”).</span><span lang="es">Alias por cuenta («Trabajo», «Personal»).</span></li>
+              <li><span lang="en"><b>Add Account…</b> runs <code>gh auth login</code> in Terminal.</span><span lang="es"><b>Añadir cuenta…</b> lanza <code>gh auth login</code> en Terminal.</span></li>
+              <li><span lang="en">Optional global git author per account, prefilled from your GitHub profile (private emails use the <code>noreply</code> address).</span><span lang="es">Autor global de git por cuenta, opcional y rellenado desde tu perfil de GitHub (si el correo es privado, se usa el <code>noreply</code>).</span></li>
+            </ul>
+          </div>
+          <div data-panel="general" hidden>
+            <h3>General</h3>
+            <p><span lang="en">The basics.</span><span lang="es">Lo básico.</span></p>
+            <ul>
+              <li><span lang="en">Open at login.</span><span lang="es">Abrir al iniciar sesión.</span></li>
+              <li><span lang="en">Show only the icon in the menu bar.</span><span lang="es">Mostrar solo el icono en la barra de menús.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand"><img src="img/icon.png" alt="" width="28" height="28"> GitSwitcher <span id="version"></span></div>
+    <nav>
+      <a href="https://github.com/marcosesperon/GitSwitcher">GitHub</a>
+      <a href="https://github.com/marcosesperon/GitSwitcher/releases"><span lang="en">Releases</span><span lang="es">Versiones</span></a>
+      <a href="https://github.com/marcosesperon/GitSwitcher/blob/main/LICENSE"><span lang="en">MIT License</span><span lang="es">Licencia MIT</span></a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const v_root = document.documentElement;
+
+  // ---------------- Idioma ----------------
+  // Por defecto, el del navegador; si el visitante elige otro, se recuerda.
+  const read_saved_lang = () => { try { return localStorage.getItem("gitswitcher-lang"); } catch { return null; } };
+  const save_lang = (v_lang) => { try { localStorage.setItem("gitswitcher-lang", v_lang); } catch {} };
+  const detect_lang = () => (navigator.language || "en").toLowerCase().startsWith("es") ? "es" : "en";
+
+  const apply_lang = (v_lang) => {
+    v_root.dataset.lang = v_lang;
+    v_root.lang = v_lang;
+    document.querySelectorAll("[data-set-lang]").forEach((v_btn) =>
+      v_btn.setAttribute("aria-pressed", String(v_btn.dataset.setLang === v_lang)));
+    document.title = v_lang === "es"
+      ? "GitSwitcher — cambia de cuenta de GitHub CLI desde la barra de menús"
+      : "GitSwitcher — switch GitHub CLI accounts from the menu bar";
+    update_shot();
+    render_terminal();
+  };
+
+  document.querySelectorAll("[data-set-lang]").forEach((v_btn) =>
+    v_btn.addEventListener("click", () => { save_lang(v_btn.dataset.setLang); apply_lang(v_btn.dataset.setLang); }));
+
+  // ---------------- Capturas: idioma + tema ----------------
+  const v_dark_query = matchMedia("(prefers-color-scheme: dark)");
+  const v_shot = document.getElementById("shot");
+
+  const update_shot = () => {
+    const v_theme = v_dark_query.matches ? "dark" : "light";
+    v_shot.src = `img/settings-${v_shot.dataset.shot}-${v_root.dataset.lang}-${v_theme}.png`;
+  };
+  v_dark_query.addEventListener("change", update_shot);
+
+  document.querySelectorAll("[data-tab]").forEach((v_tab) => v_tab.addEventListener("click", () => {
+    document.querySelectorAll("[data-tab]").forEach((v_other) =>
+      v_other.setAttribute("aria-selected", String(v_other === v_tab)));
+    document.querySelectorAll("[data-panel]").forEach((v_panel) =>
+      v_panel.hidden = v_panel.dataset.panel !== v_tab.dataset.tab);
+    v_shot.dataset.shot = v_tab.dataset.tab;
+    update_shot();
+  }));
+
+  // ---------------- Botones «Copiar» ----------------
+  document.querySelectorAll(".copy").forEach((v_btn) => v_btn.addEventListener("click", async () => {
+    const v_text = v_btn.parentElement.querySelector("code").textContent;
+    try { await navigator.clipboard.writeText(v_text); } catch { return; }
+    v_btn.classList.add("done");
+    const v_original = v_btn.innerHTML;
+    v_btn.innerHTML = '<span lang="en">Copied</span><span lang="es">Copiado</span>';
+    setTimeout(() => { v_btn.classList.remove("done"); v_btn.innerHTML = v_original; }, 1400);
+  }));
+
+  // ---------------- Demo del menú + terminal ----------------
+  const v_gs = document.getElementById("gs");
+  const v_gs_button = document.getElementById("gs-button");
+  const v_term = document.getElementById("term");
+  let v_active = { login: "octo-work", alias: "Work" };
+  let v_last_switch = null;
+
+  const set_menu_open = (v_open) => {
+    v_gs.dataset.open = String(v_open);
+    v_gs_button.setAttribute("aria-expanded", String(v_open));
+  };
+  v_gs_button.addEventListener("click", (v_event) => {
+    v_event.stopPropagation();
+    set_menu_open(v_gs.dataset.open !== "true");
+  });
+  document.addEventListener("click", () => set_menu_open(false));
+  document.addEventListener("keydown", (v_event) => { if (v_event.key === "Escape") set_menu_open(false); });
+
+  // Pinta lo que se vería en la terminal con la cuenta activa actual.
+  const render_terminal = () => {
+    const v_es = v_root.dataset.lang === "es";
+    const v_other = v_active.login === "octo-work" ? "octo-personal" : "octo-work";
+    let v_html = "";
+    if (v_last_switch) {
+      v_html += `<span class="t-dim">${v_es ? "# lo que GitSwitcher acaba de hacer por ti:" : "# what GitSwitcher just did for you:"}</span>\n`;
+      v_html += `$ gh auth switch --user <span class="t-acc">${v_last_switch}</span>\n`;
+      v_html += `<span class="t-ok">✓</span> Switched active account for github.com to <b>${v_last_switch}</b>\n\n`;
+    } else {
+      v_html += `<span class="t-dim">${v_es ? "# antes: un script por cuenta" : "# before: one script per account"}</span>\n`;
+      v_html += `$ ./switch-to-${v_active.alias.toLowerCase()}.sh\n\n`;
+    }
+    v_html += `$ gh auth status\ngithub.com\n`;
+    v_html += `  <span class="t-ok">✓</span> Logged in to github.com account <b>${v_active.login}</b> (keyring)\n`;
+    v_html += `  - Active account: <span class="t-ok">true</span>\n`;
+    v_html += `  <span class="t-ok">✓</span> Logged in to github.com account ${v_other} (keyring)\n`;
+    v_html += `  - Active account: <span class="t-dim">false</span>\n$ <span class="caret"></span>`;
+    v_term.innerHTML = v_html;
+  };
+
+  document.querySelectorAll(".gs-menu .row[data-login]").forEach((v_row) => v_row.addEventListener("click", () => {
+    v_active = { login: v_row.dataset.login, alias: v_row.dataset.alias };
+    if (v_row.getAttribute("aria-checked") !== "true") v_last_switch = v_active.login;
+    document.querySelectorAll(".gs-menu .row[data-login]").forEach((v_other) =>
+      v_other.setAttribute("aria-checked", String(v_other === v_row)));
+    document.getElementById("gs-label").textContent = v_active.alias;
+    document.getElementById("hint-label-en").textContent = v_active.alias;
+    document.getElementById("hint-label-es").textContent = v_active.alias;
+    render_terminal();
+  }));
+  document.querySelectorAll(".gs-menu [data-go]").forEach((v_row) => v_row.addEventListener("click", () => {
+    document.querySelector(v_row.dataset.go).scrollIntoView();
+  }));
+
+  // ---------------- Reloj de la barra ----------------
+  const v_clock = document.getElementById("clock");
+  const tick = () => { v_clock.textContent = new Date().toLocaleTimeString(v_root.lang, { hour: "numeric", minute: "2-digit" }); };
+  tick(); setInterval(tick, 15000);
+
+  // ---------------- Versión publicada ----------------
+  // Se pregunta a la API de GitHub; si falla, el pie se queda sin número.
+  fetch("https://api.github.com/repos/marcosesperon/GitSwitcher/releases/latest")
+    .then((v_response) => v_response.ok ? v_response.json() : null)
+    .then((v_release) => { if (v_release && v_release.tag_name) document.getElementById("version").textContent = v_release.tag_name; })
+    .catch(() => {});
+
+  // ?lang=es / ?lang=en en la dirección manda (útil para compartir un enlace).
+  const v_url_lang = new URLSearchParams(location.search).get("lang");
+  apply_lang(["en", "es"].includes(v_url_lang) ? v_url_lang : (read_saved_lang() || detect_lang()));
+})();
+</script>
+</body>
+</html>
