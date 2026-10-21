@@ -691,3 +691,74 @@ los botones «Instalar y reiniciar» / «Actualizar con Homebrew», «Ver en Git
   otra posterior para ver el aviso y la instalación de verdad.
 - Las notas se muestran con formato «en línea» (negritas, enlaces); las listas
   de Markdown salen con su guion tal cual.
+
+## 2026-10-21 — Traducción a los principales idiomas
+
+### 1. La petición tal como se ha entendido
+
+- La app pasa de 2 a 9 idiomas: inglés (base), español, francés, alemán,
+  italiano, portugués de Brasil, japonés, chino simplificado y coreano. macOS
+  elige según el idioma del sistema (o el que el usuario fije para la app en
+  Ajustes del Sistema › General › Idioma y región).
+- Se traducen los 87 textos actuales: menú, ajustes (General, Cuentas, Guía),
+  ventana de actualización, avisos y mensajes de error. Los comandos (`gh auth
+  login`…), nombres propios (GitHub, Homebrew, Terminal) y `includeIf`/rutas no
+  se traducen.
+- Términos de macOS con la traducción oficial de Apple en cada idioma
+  (Ajustes/Réglages/Einstellungen…, barra de menús, Terminal, llavero…).
+- La web y el README no se traducen; el README lista los idiomas e invita a
+  revisiones nativas.
+
+**Confirmación:** confirmado por el autor el 2026-10-21.
+
+Punto de partida: añadir traducciones de la app a los principales idiomas (hoy
+solo inglés y español). Llegó mientras se terminaba lo de las actualizaciones,
+que queda sin commitear.
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Qué idiomas: europeos (fr, de, it, pt-BR) o también asiáticos (ja,
+zh-Hans, ko)?
+**R1.** Europeos y asiáticos: francés, alemán, italiano, portugués de Brasil,
+japonés, chino simplificado y coreano.
+
+**P2.** ¿Qué se traduce: solo la app, la app y la web, o la app y el README?
+**R2.** Solo la app.
+
+### 3. Fuentes analizadas
+
+- `GitSwitcher/Resources/Localizable.xcstrings`: 87 textos (inglés base +
+  español). La web (`site/index.html`) es bilingüe EN/ES con `<span lang>`.
+
+### 4. Decisiones
+
+- **Siete idiomas nuevos:** fr, de, it, pt-BR, ja, zh-Hans, ko. Traducciones
+  hechas por Claude; se invita en el README a revisión nativa (sobre todo
+  ja/zh/ko).
+- **Solo la app** (menú, ajustes, guía, actualización, errores). Por qué: es
+  donde la traducción sirve al usuario; la web sigue EN/ES.
+- **Plan aprobado el 2026-10-21** («dale»). Implementación:
+  - 87 textos × 7 idiomas cargados con un script temporal que valida que cada
+    traducción conserva los huecos y usa posiciones (`%1$@`) cuando hay varios.
+    En la primera pasada faltaba un texto en todas las listas (descuadre en el
+    nº 69); se detectó por la validación de recuento y se corrigió.
+  - Términos de macOS según Apple: Réglages, Einstellungen, Impostazioni,
+    Ajustes (pt-BR), 設定, 设置, 설정; barra de menús, llavero, Terminal…
+  - `CFBundleLocalizations` ampliado en `project.yml`.
+  - `LocalizationTests` (3 tests) para que no se cuele un texto sin traducir.
+  - Revisión visual en japonés, alemán y francés (ajustes, guía y ventana de
+    actualización): nada se corta.
+
+### 5. Alternativas descartadas
+
+- **Traducir también la web.** Multiplicaría las capturas (de 16 a 72, ~7 MB) o
+  dejaría capturas en inglés; se puede hacer más adelante.
+- **Traducir el README.** Poco uso frente al coste de mantenerlo en 9 idiomas.
+- **Solo europeos.** Deja fuera mercados grandes de Mac (Japón, China, Corea).
+
+### 6. Pendiente de comprobar
+
+- Revisión por hablantes nativos (sobre todo ja, zh-Hans, ko); invitación en el
+  README.
+- Las notas de la ventana de actualización vienen del texto de la release, que
+  se escribe en un solo idioma (inglés).

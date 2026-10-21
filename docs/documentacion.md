@@ -189,9 +189,22 @@ ninguna cuenta real. Las preferencias van a un dominio temporal de
 
 ### Traducciones
 
-Los textos están en `GitSwitcher/Resources/Localizable.xcstrings` (inglés base y
-español). Al añadir textos nuevos en el código, abre el catálogo en Xcode: los
-detecta al compilar y solo hay que traducirlos.
+La app está en 9 idiomas: inglés (base), español, francés, alemán, italiano,
+portugués de Brasil, japonés, chino simplificado y coreano. macOS elige según el
+idioma del sistema o el que el usuario fije para la app.
+
+- Los textos están en `GitSwitcher/Resources/Localizable.xcstrings`. Al añadir
+  textos nuevos en el código, abre el catálogo en Xcode: los detecta al compilar
+  y solo hay que traducirlos a los 8 idiomas.
+- Cuando un texto tiene varios huecos (`%@`), las traducciones usan posiciones
+  (`%1$@`, `%2$@`) para que cada idioma pueda ordenar la frase a su manera.
+- `LocalizationTests` falla si un texto no está en todos los idiomas, si una
+  traducción pierde o añade huecos, o si la app compilada no incluye algún
+  `.lproj`. Los idiomas también deben estar en `CFBundleLocalizations`
+  (`project.yml`).
+- Para revisar a ojo cómo queda un idioma: el test de capturas acepta cualquier
+  idioma (`GITSWITCHER_SCREENSHOTS_LANG` + `-testLanguage`); `screenshots.sh` solo
+  genera inglés y español porque son los de la web.
 
 ## 3. Ejemplos de uso
 

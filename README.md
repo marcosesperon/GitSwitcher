@@ -73,7 +73,9 @@ The Xcode project is generated from `project.yml` and is not committed.
 
 ## Languages
 
-English and Spanish. Translations live in `GitSwitcher/Resources/Localizable.xcstrings`; pull requests with new languages are welcome.
+English, Spanish, French, German, Italian, Portuguese (Brazil), Japanese, Simplified Chinese and Korean. GitSwitcher follows your system language (or the one you set for it in *System Settings › General › Language & Region*).
+
+Translations live in `GitSwitcher/Resources/Localizable.xcstrings`. Most of them were written with AI help, so **reviews from native speakers are very welcome** — especially for Japanese, Chinese and Korean. Open an issue or a pull request; the `LocalizationTests` make sure no string is missing and placeholders (`%@`) are kept.
 
 ## License
 
