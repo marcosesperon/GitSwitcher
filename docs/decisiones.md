@@ -405,3 +405,45 @@ barra») o en una sección propia nueva con la lista?
 
 - Prueba del autor: el botón abre Terminal con `gh auth login` y, al terminar,
   la cuenta nueva aparece en la lista sin reabrir los ajustes.
+
+## 2026-10-21 — Publicación de la v1.0.0
+
+*(Modo directo: petición «publica todo», sin fase de preguntas salvo confirmar
+que incluía la release.)*
+
+### 1. La petición tal como se ha entendido
+
+Commit y push de los cambios pendientes (guía y botón «Añadir cuenta…») y
+publicación de la primera versión con `scripts/release.sh 1.0.0`. **Confirmación:**
+el autor eligió «Sí, v1.0.0».
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Publicar también la primera versión ahora?
+**R1.** Sí, v1.0.0.
+
+### 3. Fuentes analizadas
+
+- `scripts/release.sh` en `9f9b12c`.
+
+### 4. Decisiones
+
+- **Autor del commit del tap = autor local de este repo.** El clon temporal del
+  tap habría usado el git global (correo de trabajo). Corregido en `e159a0f`.
+- **`${TAG}` con llaves.** Bash con locale no UTF-8 tomaba el primer byte de «…»
+  como parte del nombre de la variable (`TAG…: unbound variable`). Falló antes
+  de publicar nada; corregido en `aeb12bf`.
+- Resultado: release `v1.0.0` con `GitSwitcher-1.0.0.zip`
+  (sha256 `ef501f29…79b1eb`), tap `marcosesperon/homebrew-tap` creado (público)
+  con `Casks/gitswitcher.rb`. Comprobado que el SHA del cask coincide con el zip
+  descargado y que los commits del tap van con el correo personal.
+
+### 5. Alternativas descartadas
+
+- Ninguna.
+
+### 6. Pendiente de comprobar
+
+- Instalar con `brew install --cask marcosesperon/tap/gitswitcher` en un Mac
+  real y comprobar que el `postflight` quita la cuarentena y la app abre sin
+  aviso de Gatekeeper.
