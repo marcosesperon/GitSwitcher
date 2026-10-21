@@ -817,3 +817,44 @@ subirlos y publicar la v1.1.0. **Confirmación:** petición explícita del autor
   caso. Pendiente de decidir si se ajusta.
 - Prueba real del actualizador: cuando se publique la siguiente versión,
   comprobar el aviso y la actualización desde la 1.1.0.
+
+## 2026-10-21 — Revisión de datos personales en el repositorio
+
+*(Consulta directa: «¿me puedes asegurar que no hay datos personales…?».)*
+
+### 1. La petición tal como se ha entendido
+
+Comprobar que en el código fuente (y lo publicado) no hay datos personales.
+
+### 2. Preguntas y respuestas
+
+**P1.** La pregunta P4 del primer bloque menciona la empresa del autor y está en
+el historial: ¿cambiarla, cambiarla y reescribir el historial, o dejarla?
+**R1.** Dejarlo como está.
+
+### 3. Fuentes analizadas
+
+- Los 72 ficheros versionados y todo el historial de git (`git log -p -S`).
+- Autores y committers del repo y del tap `marcosesperon/homebrew-tap`.
+- Los zips publicados v1.0.0 y v1.1.0 (texto dentro de los binarios).
+- Capturas de la web (todas con datos inventados `octo-*`).
+
+### 4. Decisiones
+
+- Resultado: no hay cuenta de trabajo, correo de trabajo, ID numérico de GitHub,
+  rutas del Mac del autor, tokens ni referencias al proyecto de partida, ni en
+  los ficheros actuales ni en el historial ni en los binarios.
+- Datos del autor presentes a propósito: usuario `marcosesperon`, nombre en el
+  copyright de la app y correo personal como autor de los commits.
+- **Se deja tal cual** la mención a la empresa en P4 y el correo personal en el
+  bloque de la cuenta personal (ya público por los commits).
+
+### 5. Alternativas descartadas
+
+- **Sustituir la mención en un commit nuevo.** Seguiría en el historial.
+- **Reescribir el historial (`push --force`).** Cambia todos los commits y obliga
+  a revisar las releases que apuntan a ellos.
+
+### 6. Pendiente de comprobar
+
+- Nada.
