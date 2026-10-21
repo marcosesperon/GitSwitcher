@@ -1,0 +1,28 @@
+# Fórmula (cask) de Homebrew para GitSwitcher.
+# La genera scripts/release.sh a partir de esta plantilla; no se edita a mano
+# en el tap.
+cask "gitswitcher" do
+  version "__VERSION__"
+  sha256 "__SHA256__"
+
+  url "https://github.com/__REPO__/releases/download/v#{version}/GitSwitcher-#{version}.zip"
+  name "GitSwitcher"
+  desc "Menu bar app to switch between GitHub CLI (gh) accounts"
+  homepage "https://github.com/__REPO__"
+
+  depends_on macos: ">= :sonoma"
+  depends_on formula: "gh"
+
+  app "GitSwitcher.app"
+
+  # La app no está firmada con Developer ID: le quitamos la marca de
+  # «descargado de internet» para que macOS no bloquee la primera apertura.
+  postflight do
+    system_command "/usr/bin/xattr",
+                   args: ["-dr", "com.apple.quarantine", "#{appdir}/GitSwitcher.app"]
+  end
+
+  uninstall quit: "com.marcosesperon.GitSwitcher"
+
+  zap trash: "~/Library/Preferences/com.marcosesperon.GitSwitcher.plist"
+end

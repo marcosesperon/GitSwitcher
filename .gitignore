@@ -1,0 +1,8 @@
+# Proyecto generado por XcodeGen (la fuente es project.yml)
+*.xcodeproj/
+# Compilaciones
+build/
+DerivedData/
+dist/
+# macOS
+.DS_Store

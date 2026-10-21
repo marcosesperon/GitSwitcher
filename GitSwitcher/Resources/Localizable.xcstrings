@@ -1,0 +1,312 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ took too long to answer.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ha tardado demasiado en responder."
+          }
+        }
+      }
+    },
+    "A short name to show in the menu bar instead of the GitHub username.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un nombre corto para mostrar en la barra de menús en lugar del usuario de GitHub."
+          }
+        }
+      }
+    },
+    "Add Account…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir cuenta…"
+          }
+        }
+      }
+    },
+    "Also change the git author when switching": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambiar también el autor de git al cambiar de cuenta"
+          }
+        }
+      }
+    },
+    "Couldn't run %@: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha podido ejecutar %1$@: %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't run %1$@: %2$@"
+          }
+        }
+      }
+    },
+    "Couldn't update git config: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha podido actualizar la configuración de git: %@"
+          }
+        }
+      }
+    },
+    "Email": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correo"
+          }
+        }
+      }
+    },
+    "Fill from GitHub": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rellenar desde GitHub"
+          }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
+          }
+        }
+      }
+    },
+    "Git author": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autor de git"
+          }
+        }
+      }
+    },
+    "GitHub CLI (gh) is not installed.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub CLI (gh) no está instalado."
+          }
+        }
+      }
+    },
+    "GitHub CLI (gh) was not found": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha encontrado GitHub CLI (gh)"
+          }
+        }
+      }
+    },
+    "GitHub account: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta de GitHub: %@"
+          }
+        }
+      }
+    },
+    "GitSwitcher Settings": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes de GitSwitcher"
+          }
+        }
+      }
+    },
+    "How to Install gh…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cómo instalar gh…"
+          }
+        }
+      }
+    },
+    "Loading accounts…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cargando cuentas…"
+          }
+        }
+      }
+    },
+    "Menu bar name": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre en la barra de menús"
+          }
+        }
+      }
+    },
+    "Name": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre"
+          }
+        }
+      }
+    },
+    "No GitHub accounts signed in to gh": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay cuentas de GitHub con sesión iniciada en gh"
+          }
+        }
+      }
+    },
+    "Open at login": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir al iniciar sesión"
+          }
+        }
+      }
+    },
+    "Quit GitSwitcher": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salir de GitSwitcher"
+          }
+        }
+      }
+    },
+    "Run “gh auth login” again for this account.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vuelve a ejecutar «gh auth login» para esta cuenta."
+          }
+        }
+      }
+    },
+    "Sets user.name and user.email in your global ~/.gitconfig. Leave it off if you configure the author per repository or with includeIf.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambia user.name y user.email en tu ~/.gitconfig global. Déjalo desactivado si configuras el autor por repositorio o con includeIf."
+          }
+        }
+      }
+    },
+    "Settings…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes…"
+          }
+        }
+      }
+    },
+    "Show only the icon in the menu bar": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar solo el icono en la barra de menús"
+          }
+        }
+      }
+    },
+    "gh failed without saying why.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gh ha fallado sin dar explicaciones."
+          }
+        }
+      }
+    },
+    "gh returned something GitSwitcher didn't understand. Is gh up to date?": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gh ha devuelto algo que GitSwitcher no entiende. ¿Está gh actualizado?"
+          }
+        }
+      }
+    },
+    "git was not found on this Mac.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha encontrado git en este Mac."
+          }
+        }
+      }
+    },
+    "sign-in expired": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sesión caducada"
+          }
+        }
+      }
+    },
+    "switching…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "cambiando…"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
