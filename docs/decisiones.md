@@ -1230,3 +1230,35 @@ autor o a ambos (nombre → perfil, botón → repo)?
 
 - `MARKETING_VERSION` en `project.yml` se desfasa en cada release. Mejora
   posible: que `release.sh` avise si no coincide con la versión que se publica.
+
+## 2026-10-21 — Publicación de la v1.2.3
+
+*(Modo directo: «haz commit, push y publica la 1.2.3».)*
+
+### 1. La petición tal como se ha entendido
+
+Commit y push del botón de donación y la sección «Acerca de», y publicar la
+v1.2.3. **Confirmación:** petición explícita del autor.
+
+### 2. Preguntas y respuestas
+
+- Ninguna.
+
+### 3. Fuentes analizadas
+
+- Cambios sin commitear del bloque anterior.
+
+### 4. Decisiones
+
+- `MARKETING_VERSION` subido a 1.2.3 antes del commit y capturas regeneradas,
+  para que la web muestre la misma versión que se publica.
+- Commit `c340d46` y release `v1.2.3` (sha256 `7d6ef1d3…829df25`) con notas que
+  incluyen el enlace de donación.
+
+### 5. Alternativas descartadas
+
+- Ninguna.
+
+### 6. Pendiente de comprobar
+
+- Nada.
