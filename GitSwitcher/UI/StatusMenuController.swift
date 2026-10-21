@@ -11,9 +11,9 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
     private let store: AccountsStore
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let menu = NSMenu()
-    private let openSettings: () -> Void
+    private let openSettings: (SettingsTab?) -> Void
 
-    init(store: AccountsStore, openSettings: @escaping () -> Void) {
+    init(store: AccountsStore, openSettings: @escaping (SettingsTab?) -> Void) {
         self.store = store
         self.openSettings = openSettings
         super.init()
@@ -91,10 +91,11 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
 
         case .ghMissing:
             menu.addItem(disabledItem(String(localized: "GitHub CLI (gh) was not found")))
-            menu.addItem(actionItem(String(localized: "How to Install gh…"), action: #selector(openInstallGuide)))
+            menu.addItem(actionItem(String(localized: "Setup Guide…"), action: #selector(showGuide)))
 
         case .signedOut:
             menu.addItem(disabledItem(String(localized: "No GitHub accounts signed in to gh")))
+            menu.addItem(actionItem(String(localized: "Setup Guide…"), action: #selector(showGuide)))
 
         case .failed(let message):
             menu.addItem(disabledItem(message))
@@ -114,9 +115,6 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         }
 
         menu.addItem(.separator())
-        if store.status != .ghMissing {
-            menu.addItem(actionItem(String(localized: "Add Account…"), action: #selector(addAccount)))
-        }
         menu.addItem(actionItem(String(localized: "Settings…"), action: #selector(showSettings), key: ","))
         menu.addItem(.separator())
         menu.addItem(actionItem(String(localized: "Quit GitSwitcher"), action: #selector(quit), key: "q"))
@@ -160,18 +158,12 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         Task { await store.switchTo(account) }
     }
 
-    @objc private func addAccount() {
-        store.addAccount()
-    }
-
     @objc private func showSettings() {
-        openSettings()
+        openSettings(nil)
     }
 
-    @objc private func openInstallGuide() {
-        if let url = URL(string: "https://cli.github.com") {
-            NSWorkspace.shared.open(url)
-        }
+    @objc private func showGuide() {
+        openSettings(.guide)
     }
 
     @objc private func quit() {

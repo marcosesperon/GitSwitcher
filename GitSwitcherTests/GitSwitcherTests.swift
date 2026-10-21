@@ -183,3 +183,27 @@ struct HostsWatcherTests {
         #expect(await waitForNotification(fixture, after: 0))
     }
 }
+
+@Suite("Comprobaciones de la guía")
+struct SetupCheckerTests {
+    @Test func leeLaVersionDeGh() {
+        let output = "gh version 2.102.0 (2026-09-30)\nhttps://github.com/cli/cli/releases/tag/v2.102.0\n"
+        #expect(SetupChecker.parseGhVersion(output) == "2.102.0")
+        #expect(SetupChecker.parseGhVersion("") == nil)
+        #expect(SetupChecker.parseGhVersion("algo raro") == nil)
+    }
+
+    @Test func detectaGhComoCredentialHelper() {
+        // Lo que deja `gh auth setup-git`: una línea vacía (para anular helpers
+        // anteriores) y luego gh.
+        #expect(SetupChecker.helpersUseGh("\n!/opt/homebrew/bin/gh auth git-credential\n"))
+        #expect(SetupChecker.helpersUseGh("!gh auth git-credential"))
+        #expect(SetupChecker.helpersUseGh("!\"/Users/a b/bin/gh\" auth git-credential"))
+    }
+
+    @Test func otrosHelpersNoCuentan() {
+        #expect(!SetupChecker.helpersUseGh(""))
+        #expect(!SetupChecker.helpersUseGh("osxkeychain\n"))
+        #expect(!SetupChecker.helpersUseGh("manager"))
+    }
+}

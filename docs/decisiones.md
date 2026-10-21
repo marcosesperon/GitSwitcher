@@ -254,3 +254,154 @@ Sigue abierto:
   en inglés (proyecto público).
 - El repositorio `marcosesperon/homebrew-tap` no existe todavía; `release.sh`
   ofrece crearlo en la primera publicación.
+
+## 2026-10-21 — Guía de instalación y configuración en los ajustes
+
+### 1. La petición tal como se ha entendido
+
+Los ajustes pasan a tener tres pestañas:
+
+- **General:** abrir al iniciar sesión y «solo icono en la barra».
+- **Cuentas:** alias por cuenta y el bloque de autor de git (lo que hoy hay).
+- **Guía:** pasos numerados, cada uno con su estado real comprobado en vivo
+  (✓ hecho / ✗ falta) y una explicación corta:
+  1. **Instalar GitHub CLI.** ✓ si la app encuentra gh (muestra versión y ruta).
+     Comando `brew install gh` con «Copiar» y «Abrir en Terminal», y enlace a
+     cli.github.com para otras formas de instalarlo.
+  2. **Iniciar sesión con cada cuenta.** ✓ si hay al menos una cuenta en
+     github.com (muestra cuáles). Comando `gh auth login`, repetir por cada cuenta.
+  3. **Que git use la cuenta activa.** ✓ si gh es el credential helper de git
+     para github.com. Comando `gh auth setup-git`. Se explica que sin esto
+     `git push` no sigue a la cuenta elegida.
+  4. **(Opcional) Autor de los commits.** Sin comprobación: explica la opción de
+     la pestaña Cuentas y la alternativa `includeIf`.
+
+  Las comprobaciones se repiten al abrir la pestaña y con un botón «Comprobar de
+  nuevo». Pasos con comando: «Copiar» y «Abrir en Terminal» (se ejecuta al
+  momento, a la vista).
+- **Menú:** si falta gh o no hay ninguna cuenta, aparece «Guía de configuración…»
+  y abre los ajustes en la pestaña Guía (sustituye a «Cómo instalar gh…»). El paso
+  3 no dispara este aviso: solo se ve dentro de la guía.
+- Textos en inglés y español, como el resto de la app.
+
+**Confirmación:** confirmado por el autor el 2026-10-21.
+
+Punto de partida: añadir en los ajustes de la app una sección de guía que explique
+los requisitos de instalación y los pasos para que las cuentas aparezcan en la app.
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Dónde va la guía: sección al final del formulario, ajustes en pestañas
+(General / Cuentas / Guía) o ventana aparte?
+**R1.** Ajustes en pestañas: «General», «Cuentas» y «Guía».
+
+**P2.** ¿Guía solo de texto o con comprobaciones en vivo del estado del equipo?
+**R2.** Con comprobaciones en vivo (✓/✗ por paso): gh instalado (y versión),
+alguna cuenta con sesión, gh como credential helper de git.
+
+**P3.** ¿Los pasos solo explican, permiten copiar el comando, o además lo abren en
+Terminal?
+**R3.** Explican, permiten copiar y tienen «Abrir en Terminal»; para instalar gh,
+además, enlace a su web.
+
+**P4.** ¿La guía se abre sola en algún momento?
+**R4.** Cuando falta algo: si gh no está o no hay cuentas, el menú ofrece «Guía de
+configuración…», que abre los ajustes en la pestaña Guía (sustituye a «Cómo
+instalar gh…»).
+
+### 3. Fuentes analizadas
+
+- `GitSwitcher/UI/SettingsView.swift` (commit `8eca1f6`): hoy los ajustes son un
+  único formulario con tres secciones (General, Nombre en la barra, Autor de git).
+
+### 4. Decisiones
+
+- **Ajustes en pestañas: General, Cuentas y Guía.** Por qué: es el patrón estándar
+  de macOS, la guía tiene espacio propio y la ventana no crece sin límite.
+- **Guía con comprobaciones en vivo.** Por qué: quien la lee ve al momento qué le
+  falta en su equipo, en vez de seguir pasos que quizá ya tiene hechos.
+- **Cada comando con «Copiar» y «Abrir en Terminal».** Se reutiliza el mecanismo
+  del `.command` temporal de «Añadir cuenta…»: el comando se ejecuta a la vista en
+  Terminal, lanzado por el usuario. Para instalar gh, enlace a cli.github.com
+  por si no se usa Homebrew.
+- **La guía se ofrece desde el menú solo cuando falta algo imprescindible** (gh o
+  cuentas). Por qué: quien ya lo tiene todo no ve nada nuevo; quien no, la
+  encuentra donde la necesita.
+
+- **Plan aprobado el 2026-10-21** (respuesta «dale»). Decisiones técnicas:
+  - `TerminalLauncher` extraído de `GhClient` para reutilizar el `.command`.
+  - `SetupChecker` separado y sin efectos; el análisis de salidas (versión de gh,
+    helpers de git) en funciones puras con tests.
+  - La pestaña activa vive en `AccountsStore.settingsTab` para que el menú abra
+    los ajustes en la Guía.
+  - Mejora surgida al implementar: si gh no estaba al arrancar, cada refresco lo
+    vuelve a buscar, para que la guía y el menú se enteren de que se ha instalado.
+- **Comprobación visual** con un test temporal que dibuja los ajustes en una
+  ventana y guarda la imagen (inglés y español); se borró tras revisarlo.
+
+### 5. Alternativas descartadas
+
+- **Abrir la guía en el primer arranque.** Molesta a quien ya lo tiene todo listo.
+- **Guía solo de texto.** Igual para todos; no dice qué falta en cada equipo.
+- **Guía como sección al final del formulario único.** Alarga la ventana y la guía
+  queda escondida abajo.
+- **Ventana aparte para la guía.** Una ventana más que gestionar sin ganar nada
+  frente a una pestaña.
+
+### 6. Pendiente de comprobar
+
+- Prueba del autor: botones «Abrir en Terminal» de cada paso y que la entrada
+  «Guía de configuración…» del menú abre la pestaña correcta (en este Mac no se
+  ve, porque gh y las cuentas ya están; se puede probar con `gh auth logout` de
+  todas las cuentas, o en otro Mac).
+- Aspecto de los pasos en estado ✗ (pendiente): no se ha visto en este Mac
+  porque los tres pasos están hechos.
+
+## 2026-10-21 — «Añadir cuenta» pasa del menú a los ajustes
+
+### 1. La petición tal como se ha entendido
+
+- **Menú de la barra:** desaparece «Añadir cuenta…». Se mantienen la lista de
+  cuentas, «Ajustes…», «Salir» y, si falta gh o no hay cuentas, «Guía de
+  configuración…».
+- **Ajustes › Cuentas:** en la sección «Nombre en la barra», debajo de la lista de
+  cuentas, un botón «Añadir cuenta…» que abre Terminal con `gh auth login` (como
+  hacía el menú), con la nota «La cuenta nueva aparecerá aquí al terminar». La
+  lista se actualiza sola gracias al vigilante de `hosts.yml`.
+- **Guía:** el paso 2 conserva su propio «Abrir en Terminal» con `gh auth login`.
+- Textos en inglés y español; README y documentación actualizados.
+
+**Confirmación:** confirmado por el autor el 2026-10-21.
+
+Punto de partida: quitar «Añadir cuenta…» del menú de la barra y poner un botón
+para añadir cuenta en la pestaña Cuentas de los ajustes.
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Dónde va el botón: debajo de la lista de cuentas (sección «Nombre en la
+barra») o en una sección propia nueva con la lista?
+**R1.** Debajo de la lista de cuentas.
+
+### 3. Fuentes analizadas
+
+- `GitSwitcher/UI/StatusMenuController.swift` y `GitSwitcher/UI/SettingsView.swift`
+  (cambios sin commitear sobre `8eca1f6`, con la pestaña Guía ya hecha).
+
+### 4. Decisiones
+
+- **Botón «Añadir cuenta…» debajo de la lista de cuentas** en Ajustes › Cuentas.
+  Por qué: cambio mínimo y el botón queda junto a lo que afecta.
+- **Plan aprobado el 2026-10-21.** Se quitó la entrada y su acción del menú; el
+  botón se desactiva si no hay gh. De paso se corrigió en `documentacion.md` una
+  línea que seguía atribuyendo el `.command` a `GhClient` (ahora es
+  `TerminalLauncher`). Revisión visual con el test temporal de capturas (borrado).
+
+### 5. Alternativas descartadas
+
+- **Sección propia «Cuentas con sesión en gh» con lista y botón.** Reorganiza más
+  la pestaña sin aportar nada para este cambio.
+
+### 6. Pendiente de comprobar
+
+- Prueba del autor: el botón abre Terminal con `gh auth login` y, al terminar,
+  la cuenta nueva aparece en la lista sin reabrir los ajustes.

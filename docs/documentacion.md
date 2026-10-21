@@ -33,14 +33,22 @@ Barra de menú (StatusMenuController)   Ajustes (SettingsView)
   - `gh auth switch --hostname github.com --user X` → cambiar de cuenta.
   - `gh auth token --user X` + `gh api user` → perfil de una cuenta **sin
     cambiar la activa** (el token se pasa solo a esa llamada y no se guarda).
-  - «Añadir cuenta…» escribe un `.command` temporal y lo abre: Terminal lo
-    ejecuta (`gh auth login`) sin pedir permisos de automatización.
+  - `openInTerminal` → lanza gh a la vista en Terminal (con `TerminalLauncher`)
+    para `gh auth login` y `gh auth setup-git`.
 - **`HostsWatcher`** vigila `hosts.yml` y su carpeta. El fichero, porque
   `gh auth switch` lo reescribe en su sitio (y eso no cuenta como cambio de la
   carpeta); la carpeta, por si el fichero aún no existe o alguien lo sustituye
   por otro, para volver a engancharse. Así, si cambias de cuenta desde la
   terminal, la barra se actualiza sola.
   Además, cada vez que se abre el menú se vuelve a preguntar a gh, por si acaso.
+- **`SetupChecker`** hace las comprobaciones de la pestaña Guía, sin cambiar
+  nada: ruta y versión de gh (`gh --version`), si git pide las credenciales de
+  github.com a gh (`git config --get-all credential.https://github.com.helper`
+  contiene `gh auth git-credential`) y si hay Homebrew.
+- **`TerminalLauncher`** abre Terminal con un comando a la vista: escribe un
+  `.command` temporal y lo abre, sin pedir permisos de automatización. Lo usan
+  el botón «Añadir cuenta…» de Ajustes › Cuentas y los botones «Abrir en
+  Terminal» de la guía.
 - **`AccountsStore`** junta todo: estado, cambio de cuenta, autor de git y
   preferencias. El menú y los ajustes solo leen de aquí.
 - **`CommandRunner`** lanza los procesos sin bloquear la interfaz, siempre con los
@@ -52,6 +60,25 @@ soportar GitHub Enterprise sería quitar el filtro de `visibleAccounts` y agrupa
 el menú por host.
 
 ## 2. Parametrización
+
+### Pestaña Guía
+
+Los ajustes tienen tres pestañas: **General**, **Cuentas** y **Guía**. La Guía
+explica qué hace falta y comprueba en vivo en qué punto está el Mac:
+
+| Paso | Se marca ✓ cuando… | Comando |
+|---|---|---|
+| 1. Instalar GitHub CLI | la app encuentra gh (enseña versión y ruta) | `brew install gh` (solo si hay Homebrew) o enlace a cli.github.com |
+| 2. Iniciar sesión con cada cuenta | hay al menos una cuenta en github.com | `gh auth login` |
+| 3. Que git use la cuenta activa | gh es el credential helper de git para github.com | `gh auth setup-git` |
+| 4. Autor de los commits | (opcional, no se comprueba) | botón a la pestaña Cuentas |
+
+Las comprobaciones se repiten al entrar en la pestaña y con «Comprobar de nuevo».
+Si al arrancar no había gh y se instala después, la app lo vuelve a buscar sola.
+Cuando falta gh o no hay ninguna cuenta, el menú ofrece «Guía de configuración…»,
+que abre los ajustes directamente en esta pestaña.
+
+### Ajustes
 
 Todo se cambia desde **Ajustes…** en el menú y se guarda en las preferencias de
 macOS (`com.marcosesperon.GitSwitcher`). No se guarda nada secreto.
@@ -110,8 +137,12 @@ detecta al compilar y solo hay que traducirlos.
 gh auth switch --hostname github.com --user mi-cuenta-personal
 ```
 
-**Añadir una cuenta.** Menú → «Añadir cuenta…». Se abre Terminal con
-`gh auth login`; al terminar, la cuenta nueva aparece sola en el menú.
+**Configurar un Mac desde cero.** Ajustes → Guía, y seguir los pasos que salgan
+con ✗ usando «Abrir en Terminal». Al volver a la pestaña se comprueban otra vez.
+
+**Añadir una cuenta.** Ajustes → Cuentas → «Añadir cuenta…». Se abre Terminal
+con `gh auth login`; al terminar, la cuenta nueva aparece sola en la lista y en
+el menú.
 
 **Que `git push` use la cuenta activa.** Una sola vez:
 

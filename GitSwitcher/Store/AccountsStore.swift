@@ -28,6 +28,14 @@ final class AccountsStore {
 
     private(set) var preferences: [String: AccountPreferences]
 
+    /// Resultado de las comprobaciones de la pestaña Guía (`nil` = sin hacer).
+    private(set) var setup: SetupStatus?
+    private(set) var isCheckingSetup = false
+
+    /// Pestaña abierta en los ajustes. Vive aquí para que el menú pueda abrir
+    /// los ajustes directamente en la Guía.
+    var settingsTab: SettingsTab = .general
+
     var iconOnly: Bool {
         didSet { storage.iconOnly = iconOnly }
     }
@@ -108,7 +116,13 @@ final class AccountsStore {
     }
 
     private func reload() async {
-        guard let client else { return }
+        guard var client else { return }
+        // Si al arrancar no había gh, lo volvemos a buscar: puede que el usuario
+        // lo acabe de instalar siguiendo la guía.
+        if client.environment.executable == nil {
+            client = GhClient(environment: await GhLocator.locate())
+            self.client = client
+        }
         guard client.environment.executable != nil else {
             allAccounts = []
             status = .ghMissing
@@ -147,13 +161,44 @@ final class AccountsStore {
         await reload()
     }
 
-    /// Abre Terminal con `gh auth login`.
+    /// Abre Terminal con `gh auth login`. El inicio de sesión lo hace gh de
+    /// principio a fin (navegador, código…), así que la app nunca ve credenciales.
     func addAccount() {
+        runGhInTerminal(["auth", "login", "--hostname", defaultGitHubHost])
+    }
+
+    /// Ejecuta gh en Terminal, a la vista del usuario.
+    func runGhInTerminal(_ arguments: [String]) {
         do {
-            try client?.openLoginInTerminal()
+            guard let client else { throw GhError.notInstalled }
+            try client.openInTerminal(arguments)
         } catch {
             lastError = error.localizedDescription
         }
+    }
+
+    /// Ejecuta `brew install gh` en Terminal (solo si hay Homebrew).
+    func installGhWithHomebrew() {
+        guard let brew = setup?.brewPath else { return }
+        do {
+            try TerminalLauncher.run([brew, "install", "gh"])
+        } catch {
+            lastError = error.localizedDescription
+        }
+    }
+
+    // MARK: - Guía
+
+    /// Repite las comprobaciones de la guía. Primero refresca las cuentas (y
+    /// vuelve a buscar gh si faltaba), porque los pasos dependen de eso.
+    func checkSetup() async {
+        guard !isCheckingSetup else { return }
+        isCheckingSetup = true
+        defer { isCheckingSetup = false }
+
+        await reload()
+        guard let client else { return }
+        setup = await SetupChecker.check(client: client)
     }
 
     func clearError() {

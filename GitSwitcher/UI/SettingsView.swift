@@ -1,7 +1,29 @@
 import SwiftUI
 
-/// Ventana de ajustes. Todo lo que se cambia aquí se guarda al momento.
+/// Ventana de ajustes, en pestañas. Todo lo que se cambia aquí se guarda al momento.
 struct SettingsView: View {
+    @Bindable var store: AccountsStore
+
+    var body: some View {
+        TabView(selection: $store.settingsTab) {
+            GeneralSettingsView(store: store)
+                .tabItem { Label("General", systemImage: "gearshape") }
+                .tag(SettingsTab.general)
+            AccountsSettingsView(store: store)
+                .tabItem { Label("Accounts", systemImage: "person.2") }
+                .tag(SettingsTab.accounts)
+            GuideView(store: store)
+                .tabItem { Label("Guide", systemImage: "checklist") }
+                .tag(SettingsTab.guide)
+        }
+        .frame(width: 520)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+// MARK: - General
+
+struct GeneralSettingsView: View {
     @Bindable var store: AccountsStore
 
     @State private var launchAtLogin = LoginItem.isEnabled
@@ -9,44 +31,48 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            generalSection
-            accountsSection
+            Section {
+                Toggle("Open at login", isOn: $launchAtLogin)
+                    .onChange(of: launchAtLogin) { _, enabled in
+                        do {
+                            try LoginItem.setEnabled(enabled)
+                            loginItemError = nil
+                        } catch {
+                            loginItemError = error.localizedDescription
+                            launchAtLogin = LoginItem.isEnabled
+                        }
+                    }
+                if let loginItemError {
+                    Text(loginItemError)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+                Toggle("Show only the icon in the menu bar", isOn: $store.iconOnly)
+            }
+        }
+        .formStyle(.grouped)
+        .fixedSize(horizontal: false, vertical: true)
+        // Si el usuario quita la app de los ítems de inicio desde Ajustes del
+        // Sistema, lo reflejamos al volver a esta pestaña.
+        .onAppear { launchAtLogin = LoginItem.isEnabled }
+    }
+}
+
+// MARK: - Cuentas
+
+struct AccountsSettingsView: View {
+    @Bindable var store: AccountsStore
+
+    var body: some View {
+        Form {
+            aliasSection
             gitAuthorSection
         }
         .formStyle(.grouped)
-        .frame(width: 460)
         .fixedSize(horizontal: false, vertical: true)
-        // Si el usuario quita la app de los ítems de inicio desde Ajustes del
-        // Sistema, lo reflejamos al volver a abrir la ventana.
-        .onAppear { launchAtLogin = LoginItem.isEnabled }
     }
 
-    // MARK: - General
-
-    private var generalSection: some View {
-        Section("General") {
-            Toggle("Open at login", isOn: $launchAtLogin)
-                .onChange(of: launchAtLogin) { _, enabled in
-                    do {
-                        try LoginItem.setEnabled(enabled)
-                        loginItemError = nil
-                    } catch {
-                        loginItemError = error.localizedDescription
-                        launchAtLogin = LoginItem.isEnabled
-                    }
-                }
-            if let loginItemError {
-                Text(loginItemError)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-            }
-            Toggle("Show only the icon in the menu bar", isOn: $store.iconOnly)
-        }
-    }
-
-    // MARK: - Alias
-
-    private var accountsSection: some View {
+    private var aliasSection: some View {
         Section {
             if store.visibleAccounts.isEmpty {
                 Text("No GitHub accounts signed in to gh")
@@ -55,6 +81,7 @@ struct SettingsView: View {
             ForEach(store.visibleAccounts) { account in
                 TextField(account.login, text: preferenceBinding(account, \.alias), prompt: Text(account.login))
             }
+            addAccountRow
         } header: {
             Text("Menu bar name")
         } footer: {
@@ -64,7 +91,18 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Autor de git
+    /// Botón para iniciar sesión con otra cuenta. Abre Terminal con
+    /// `gh auth login`; cuando gh termina, el vigilante de su configuración
+    /// refresca la lista y la cuenta nueva aparece aquí sola.
+    private var addAccountRow: some View {
+        HStack {
+            Button("Add Account…") { store.addAccount() }
+                .disabled(store.status == .ghMissing)
+            Text("The new account will show up here when you finish.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
 
     private var gitAuthorSection: some View {
         Section {
@@ -99,8 +137,6 @@ struct SettingsView: View {
         TextField("Name", text: preferenceBinding(account, \.gitName))
         TextField("Email", text: preferenceBinding(account, \.gitEmail))
     }
-
-    // MARK: - Ayudas
 
     /// Enlaza un campo de texto con una preferencia de una cuenta concreta.
     private func preferenceBinding(

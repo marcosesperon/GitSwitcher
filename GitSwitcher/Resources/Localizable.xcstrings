@@ -21,6 +21,16 @@
         }
       }
     },
+    "Accounts": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuentas"
+          }
+        }
+      }
+    },
     "Add Account…": {
       "localizations": {
         "es": {
@@ -37,6 +47,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cambiar también el autor de git al cambiar de cuenta"
+          }
+        }
+      }
+    },
+    "Check Again": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comprobar de nuevo"
+          }
+        }
+      }
+    },
+    "Commit author (optional)": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autor de los commits (opcional)"
+          }
+        }
+      }
+    },
+    "Copy": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copiar"
           }
         }
       }
@@ -63,6 +103,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No se ha podido actualizar la configuración de git: %@"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hecho"
           }
         }
       }
@@ -147,12 +197,42 @@
         }
       }
     },
-    "How to Install gh…": {
+    "GitSwitcher uses the GitHub CLI (gh) to know your accounts and to switch between them.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cómo instalar gh…"
+            "value": "GitSwitcher usa GitHub CLI (gh) para conocer tus cuentas y cambiar entre ellas."
+          }
+        }
+      }
+    },
+    "Guide": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guía"
+          }
+        }
+      }
+    },
+    "Install GitHub CLI": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar GitHub CLI"
+          }
+        }
+      }
+    },
+    "Let git use the active account": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Que git use la cuenta activa"
           }
         }
       }
@@ -163,6 +243,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cargando cuentas…"
+          }
+        }
+      }
+    },
+    "Makes gh provide the credentials for git push and pull on github.com, so they always use the account selected in the menu. Without it, git keeps using whatever credentials it had saved.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hace que gh dé las credenciales a git para push y pull en github.com, así siempre se usa la cuenta elegida en el menú. Sin esto, git sigue usando las credenciales que tuviera guardadas."
           }
         }
       }
@@ -197,6 +287,16 @@
         }
       }
     },
+    "Open Accounts Settings": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir ajustes de Cuentas"
+          }
+        }
+      }
+    },
     "Open at login": {
       "localizations": {
         "es": {
@@ -207,12 +307,52 @@
         }
       }
     },
+    "Open in Terminal": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir en Terminal"
+          }
+        }
+      }
+    },
+    "Other ways to install gh": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otras formas de instalar gh"
+          }
+        }
+      }
+    },
+    "Pending": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pendiente"
+          }
+        }
+      }
+    },
     "Quit GitSwitcher": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Salir de GitSwitcher"
+          }
+        }
+      }
+    },
+    "Run this once for every GitHub account you want in the menu. gh opens the browser to sign in and keeps the credentials in the macOS keychain.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejecútalo una vez por cada cuenta de GitHub que quieras en el menú. gh abre el navegador para iniciar sesión y guarda las credenciales en el llavero de macOS."
           }
         }
       }
@@ -247,12 +387,88 @@
         }
       }
     },
+    "Setup Guide…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guía de configuración…"
+          }
+        }
+      }
+    },
     "Show only the icon in the menu bar": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar solo el icono en la barra de menús"
+          }
+        }
+      }
+    },
+    "Sign in with each account": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar sesión con cada cuenta"
+          }
+        }
+      }
+    },
+    "Signed in: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Con sesión: %@"
+          }
+        }
+      }
+    },
+    "Switching accounts doesn't change who signs your commits. GitSwitcher can change the global git author for you, or you can set it per folder with includeIf in ~/.gitconfig.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambiar de cuenta no cambia quién firma tus commits. GitSwitcher puede cambiar el autor global de git por ti, o puedes fijarlo por carpeta con includeIf en ~/.gitconfig."
+          }
+        }
+      }
+    },
+    "The new account will show up here when you finish.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La cuenta nueva aparecerá aquí al terminar."
+          }
+        }
+      }
+    },
+    "gh %@ at %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gh %1$@ en %2$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gh %1$@ at %2$@"
+          }
+        }
+      }
+    },
+    "gh at %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gh en %@"
           }
         }
       }

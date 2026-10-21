@@ -1,4 +1,3 @@
-import AppKit
 import Foundation
 
 enum GhError: LocalizedError {
@@ -65,28 +64,19 @@ struct GhClient: Sendable {
         }
     }
 
-    /// Abre Terminal con `gh auth login` para que el usuario añada una cuenta.
-    /// El inicio de sesión lo hace gh de principio a fin (navegador, código…), así
-    /// que la app nunca ve credenciales.
-    ///
-    /// Truco: escribimos un `.command` temporal y lo abrimos; macOS lo ejecuta en
-    /// Terminal sin pedir permisos de automatización.
-    func openLoginInTerminal() throws {
+    /// Versión de gh («2.102.0»), o `nil` si no se puede saber.
+    func version() async -> String? {
+        guard let result = try? await run(["--version"]), result.succeeded else { return nil }
+        return SetupChecker.parseGhVersion(result.stdoutString)
+    }
+
+    /// Abre Terminal y ejecuta gh con `arguments`, a la vista del usuario. Se usa
+    /// para lo que necesita interacción (`gh auth login`) o que el usuario vea
+    /// qué pasa (`gh auth setup-git`). La app nunca ve credenciales: todo lo
+    /// hace gh en la terminal.
+    func openInTerminal(_ arguments: [String]) throws {
         guard let gh = environment.executable else { throw GhError.notInstalled }
-
-        var lines = ["#!/bin/sh"]
-        for (key, value) in environment.variables.sorted(by: { $0.key < $1.key }) {
-            lines.append("export \(key)=\(shellQuoted(value))")
-        }
-        lines.append("\(shellQuoted(gh.path)) auth login --hostname \(defaultGitHubHost)")
-        // Al terminar, borramos el propio script para no dejar basura.
-        lines.append("rm -f \"$0\"")
-
-        let script = FileManager.default.temporaryDirectory
-            .appendingPathComponent("gitswitcher-login-\(UUID().uuidString).command")
-        try lines.joined(separator: "\n").appending("\n").write(to: script, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: script.path)
-        NSWorkspace.shared.open(script)
+        try TerminalLauncher.run([gh.path] + arguments, environment: environment.variables)
     }
 
     // MARK: - Ayudas
@@ -105,11 +95,5 @@ struct GhClient: Sendable {
     private func cleanMessage(_ stderr: String) -> String {
         let text = stderr.trimmingCharacters(in: .whitespacesAndNewlines)
         return text.isEmpty ? String(localized: "gh failed without saying why.") : text
-    }
-
-    /// Envuelve un valor entre comillas simples para el shell, escapando las que
-    /// tenga dentro.
-    private func shellQuoted(_ value: String) -> String {
-        "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'"
     }
 }

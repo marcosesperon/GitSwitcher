@@ -40,7 +40,8 @@ xattr -dr com.apple.quarantine /Applications/GitSwitcher.app
 ## Usage
 
 - **Switch account:** click the menu bar item and pick an account. The active one has a checkmark.
-- **Add account:** *Add Account…* opens Terminal with `gh auth login`.
+- **Add account:** *Settings › Accounts › Add Account…* opens Terminal with `gh auth login`; the new account shows up when you finish.
+- **Setup guide:** *Settings › Guide* checks your Mac step by step (gh installed, accounts signed in, git using gh for credentials) and lets you copy each command or run it in Terminal. The menu offers it when something is missing.
 - **Settings:**
   - *Open at login*.
   - *Menu bar name*: a short alias per account (e.g. “Work”, “Personal”). Empty means the GitHub username.

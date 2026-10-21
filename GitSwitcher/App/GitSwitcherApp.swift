@@ -23,7 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         let settings = SettingsWindowController(store: store)
         settingsWindow = settings
-        statusMenu = StatusMenuController(store: store) { settings.show() }
+        statusMenu = StatusMenuController(store: store) { tab in settings.show(tab: tab) }
 
         Task { await store.start() }
     }

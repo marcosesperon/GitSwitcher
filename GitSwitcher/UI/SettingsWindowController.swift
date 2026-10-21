@@ -13,10 +13,12 @@ final class SettingsWindowController {
         self.store = store
     }
 
-    func show() {
+    /// Abre (o trae al frente) la ventana. Con `tab`, la abre en esa pestaña.
+    func show(tab: SettingsTab? = nil) {
+        if let tab { store.settingsTab = tab }
         if window == nil {
             let hosting = NSHostingController(rootView: SettingsView(store: store))
-            // La ventana se ajusta sola al contenido (p. ej. al activar el autor de git).
+            // La ventana se ajusta sola al contenido (al cambiar de pestaña o activar el autor de git).
             hosting.sizingOptions = [.preferredContentSize]
             let window = NSWindow(contentViewController: hosting)
             window.title = String(localized: "GitSwitcher Settings")
