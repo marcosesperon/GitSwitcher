@@ -87,10 +87,10 @@ echo "  sha256 $SHA256"
 echo
 confirm "¿Publicar la release $TAG en $REPO y actualizar $TAP_REPO?" || fail "Cancelado. El zip queda en $ZIP."
 
-step "Creando la release $TAG…"
+step "Creando la release ${TAG}…"
 gh release create "$TAG" "$ZIP" --repo "$REPO" --target main --title "$APP_NAME $VERSION" --generate-notes
 
-step "Actualizando el cask en $TAP_REPO…"
+step "Actualizando el cask en ${TAP_REPO}…"
 if ! gh repo view "$TAP_REPO" >/dev/null 2>&1; then
   confirm "El repositorio $TAP_REPO no existe. ¿Crearlo como público?" \
     || fail "Release publicada, pero el cask no se ha actualizado."
