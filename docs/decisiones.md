@@ -951,3 +951,38 @@ Ajustes › Cuentas?
 - Prueba del autor en la barra real (en las capturas no sale la barra de
   menús): icono de color con barra clara y oscura, y con el puntito de
   actualización.
+
+## 2026-10-21 — Publicación de la v1.2.0
+
+*(Modo directo: «publica» + confirmación de sacar versión.)*
+
+### 1. La petición tal como se ha entendido
+
+Commit y push de los iconos por cuenta (y de la nota pendiente de la revisión de
+datos personales) y publicación de la v1.2.0. **Confirmación:** el autor eligió
+«Sí, la 1.2.0».
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Publicar también una versión nueva?
+**R1.** Sí, la 1.2.0 (sirve además para probar el actualizador desde la 1.1.0).
+
+### 3. Fuentes analizadas
+
+- `main` en `bbd26a2`.
+
+### 4. Decisiones
+
+- Dos commits: `52e5900` (nota de la revisión de datos personales) y `bbd26a2`
+  (iconos y colores por cuenta).
+- Release `v1.2.0` (sha256 `22bc3ed4…7096b0`), cask actualizado ya con la
+  sintaxis de Homebrew 7 y notas escritas a mano.
+
+### 5. Alternativas descartadas
+
+- Ninguna.
+
+### 6. Pendiente de comprobar
+
+- Prueba real del actualizador desde la 1.1.0 instalada con Homebrew: aviso,
+  ventana de novedades y «Actualizar con Homebrew».
