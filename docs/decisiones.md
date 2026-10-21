@@ -800,6 +800,20 @@ subirlos y publicar la v1.1.0. **Confirmación:** petición explícita del autor
 
 ### 6. Pendiente de comprobar
 
-- Prueba real del actualizador: instalar la 1.1.0 (`brew upgrade --cask
-  gitswitcher` en el Mac del autor) y, cuando se publique la siguiente versión,
-  comprobar el aviso y la actualización.
+- ~~Instalar la 1.1.0 en el Mac del autor~~ → hecho con `brew upgrade --cask
+  gitswitcher`. Homebrew 7 avisó de dos usos obsoletos en el cask:
+  `depends_on macos: ">= :sonoma"` (ahora `:sonoma`) y `postflight` (ahora
+  `postflight_steps`, con `run` y el token `{{appdir}}`; `appdir` no existe dentro
+  de los pasos). Sintaxis sacada del código de Homebrew instalado, no supuesta.
+  Probado con `brew reinstall`: sin avisos y la app queda sin cuarentena.
+  Corregido en el tap (`37d6212`) y en `packaging/gitswitcher.rb.template`.
+  Riesgo asumido: `postflight_steps` no lo entienden versiones antiguas de
+  Homebrew (se actualiza solo, así que es raro tener una vieja).
+- Incidencia: al ejecutar `brew audit` para revisar el cask, Homebrew activó su
+  modo desarrollador en el Mac del autor; se desactivó al momento
+  (`brew developer off`). No usar `brew audit` sin avisar.
+- Homebrew 7 vuelve a abrir la app tras `brew upgrade`; el texto de la ventana
+  de actualización («vuelve a abrir GitSwitcher cuando termine») sobra en ese
+  caso. Pendiente de decidir si se ajusta.
+- Prueba real del actualizador: cuando se publique la siguiente versión,
+  comprobar el aviso y la actualización desde la 1.1.0.
