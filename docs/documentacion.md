@@ -60,8 +60,9 @@ Barra de menú (StatusMenuController)   Ajustes (SettingsView)
     un puntito y el menú empieza con «Actualización disponible».
   - `InstallMethod` decide cómo actualizar: si existe
     `…/Caskroom/gitswitcher` y la app está en `/Applications`, es de Homebrew y
-    se lanza `brew upgrade --cask gitswitcher` en Terminal; si no, se
-    autoactualiza.
+    se lanza `brew update && brew upgrade --cask gitswitcher` en Terminal (el
+    `brew update` hace falta porque Homebrew solo refresca los taps una vez al
+    día); si no, se autoactualiza.
   - `UpdateInstaller` no toca la app instalada hasta el final: comprueba que
     puede escribir en su carpeta, descarga, compara la huella, descomprime con
     `ditto`, comprueba identificador, versión y firma (`codesign --verify`), y

@@ -986,3 +986,50 @@ datos personales) y publicación de la v1.2.0. **Confirmación:** el autor eligi
 
 - Prueba real del actualizador desde la 1.1.0 instalada con Homebrew: aviso,
   ventana de novedades y «Actualizar con Homebrew».
+
+## 2026-10-21 — «Actualizar con Homebrew» no encontraba la versión nueva
+
+### 1. La petición tal como se ha entendido
+
+Arreglar que «Actualizar con Homebrew» diga «the latest version is already
+installed» cuando sí hay versión nueva, y publicarlo en la 1.2.1. Antes, pasar
+el Mac del autor a la 1.2.0 a mano. **Confirmación:** «si» a ambas cosas.
+
+### 2. Preguntas y respuestas
+
+**P1.** ¿Se arregla lanzando `brew update && brew upgrade --cask gitswitcher`, y
+se actualiza ya el Mac del autor a la 1.2.0?
+**R1.** Sí.
+
+### 3. Fuentes analizadas
+
+- Captura del autor: la 1.1.0 detectó la 1.2.0 y abrió Terminal, pero `brew
+  upgrade` respondió que ya estaba en la última.
+- `env_config.rb` de Homebrew 7: `HOMEBREW_AUTO_UPDATE_SECS` por defecto 86400
+  (solo actualiza taps una vez al día antes de `upgrade`).
+
+### 4. Decisiones
+
+- **Causa:** el tap local seguía en 1.1.0 porque Homebrew se había actualizado
+  hacía menos de 24 h. Le pasa a casi todo el que pulsa el botón poco después de
+  publicarse una versión.
+- **Arreglo:** el botón lanza `brew update && brew upgrade --cask gitswitcher`.
+  `TerminalLauncher` admite varios comandos encadenados con `&&` (si falla el
+  primero, no sigue).
+- Mac del autor actualizado a la 1.2.0 con `brew update` + `brew upgrade`.
+  Homebrew avisó «signer changed so macOS may prompt at next launch»: esperable
+  con firma ad hoc (cada compilación tiene una firma distinta).
+
+### 5. Alternativas descartadas
+
+- **`HOMEBREW_AUTO_UPDATE_SECS=0` en el entorno del comando.** No funciona si el
+  usuario tiene `HOMEBREW_NO_AUTO_UPDATE` en su perfil, y no se ve qué hace.
+- **Actualizar solo nuestro tap (`git pull` en su carpeta).** Depende de
+  detalles internos de Homebrew.
+
+### 6. Pendiente de comprobar
+
+- Probar el botón con el arreglo: hace falta tener la 1.2.1 instalada y publicar
+  una versión posterior.
+- Ver si el cambio de firma en cada versión hace que macOS vuelva a pedir
+  permisos (p. ej. ítem de inicio) tras actualizar.

@@ -200,3 +200,42 @@ struct UpdateInstallerTests {
         #expect(result.succeeded, "\(tool) falló: \(result.stderr)")
     }
 }
+
+@Suite("Actualizar con Homebrew")
+struct HomebrewUpgradeTests {
+    @Test func primeroActualizaHomebrewYLuegoLaApp() {
+        let commands = UpdateStore.homebrewUpgradeCommands { $0 == "/opt/homebrew/bin/brew" }
+        #expect(commands == [
+            ["/opt/homebrew/bin/brew", "update"],
+            ["/opt/homebrew/bin/brew", "upgrade", "--cask", "gitswitcher"],
+        ])
+    }
+
+    @Test func sinBrewConocidoUsaElPathDeLaTerminal() {
+        let commands = UpdateStore.homebrewUpgradeCommands { _ in false }
+        #expect(commands.first == ["/usr/bin/env", "brew", "update"])
+    }
+
+    @Test func elScriptEncadenaConAndYBorraElFichero() {
+        let script = TerminalLauncher.scriptContents(commands: [["/bin/echo", "a b"], ["/bin/echo", "it's"]])
+        #expect(script.contains("'/bin/echo' 'a b' && '/bin/echo' 'it'\\''s'"))
+        #expect(script.hasSuffix("rm -f \"$0\"\n"))
+    }
+
+    /// Ejecuta el script de verdad con `sh`: si el primer comando falla, el
+    /// segundo no se ejecuta, y el script se borra igualmente.
+    @Test func siFallaElPrimeroNoSeEjecutaElSegundo() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("GitSwitcherScript-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let marker = directory.appendingPathComponent("segundo")
+        let script = directory.appendingPathComponent("prueba.command")
+
+        try TerminalLauncher.scriptContents(commands: [["/usr/bin/false"], ["/usr/bin/touch", marker.path]])
+            .write(to: script, atomically: true, encoding: .utf8)
+        _ = try await CommandRunner.run(URL(fileURLWithPath: "/bin/sh"), [script.path])
+
+        #expect(!FileManager.default.fileExists(atPath: marker.path))
+        #expect(!FileManager.default.fileExists(atPath: script.path))
+    }
+}

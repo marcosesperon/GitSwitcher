@@ -44,7 +44,7 @@ xattr -dr com.apple.quarantine /Applications/GitSwitcher.app
 - **Switch account:** click the menu bar item and pick an account. The active one has a checkmark.
 - **Add account:** *Settings › Accounts › Add Account…* opens Terminal with `gh auth login`; the new account shows up when you finish.
 - **Setup guide:** *Settings › Guide* checks your Mac step by step (gh installed, accounts signed in, git using gh for credentials) and lets you copy each command or run it in Terminal. The menu offers it when something is missing.
-- **Updates:** GitSwitcher checks GitHub once a day (or on demand with *Check for Updates…*) and shows what's new. *Install and Relaunch* downloads the new version, verifies its SHA-256 and replaces the app. If you installed it with Homebrew, it runs `brew upgrade --cask gitswitcher` instead.
+- **Updates:** GitSwitcher checks GitHub once a day (or on demand with *Check for Updates…*) and shows what's new. *Install and Relaunch* downloads the new version, verifies its SHA-256 and replaces the app. If you installed it with Homebrew, it runs `brew update && brew upgrade --cask gitswitcher` instead.
 - **Settings:**
   - *Open at login*.
   - *Menu bar appearance*: per account, a short alias (e.g. “Work”), an icon (briefcase, house, code, graduation cap… 24 to choose from) and a color (macOS system colors, readable on light and dark menu bars). Empty means the GitHub username and the standard icon.

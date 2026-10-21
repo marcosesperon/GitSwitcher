@@ -104,16 +104,27 @@ final class UpdateStore {
         }
     }
 
-    /// Abre Terminal con `brew upgrade --cask gitswitcher`. Homebrew cierra la
-    /// app, instala la nueva y el usuario la vuelve a abrir.
+    /// Abre Terminal con `brew update && brew upgrade --cask gitswitcher`.
+    ///
+    /// El `brew update` hace falta: Homebrew solo refresca los taps una vez al
+    /// día, así que sin él `brew upgrade` puede no enterarse todavía de la
+    /// versión que acabamos de anunciar. Homebrew cierra la app, instala la
+    /// nueva y (en Homebrew 7) la vuelve a abrir.
     func upgradeWithHomebrew() {
-        let brew = SetupChecker.brewLocations.first { FileManager.default.isExecutableFile(atPath: $0) }
-        let command = brew.map { [$0] } ?? ["/usr/bin/env", "brew"]
         do {
-            try TerminalLauncher.run(command + ["upgrade", "--cask", "gitswitcher"])
+            try TerminalLauncher.run(commands: Self.homebrewUpgradeCommands())
         } catch {
             installError = error.localizedDescription
         }
+    }
+
+    /// Los comandos de «Actualizar con Homebrew». Usa la ruta de brew si la
+    /// encuentra; si no, confía en el PATH de la terminal.
+    nonisolated static func homebrewUpgradeCommands(
+        isExecutable: (String) -> Bool = { FileManager.default.isExecutableFile(atPath: $0) }
+    ) -> [[String]] {
+        let brew = SetupChecker.brewLocations.first(where: isExecutable).map { [$0] } ?? ["/usr/bin/env", "brew"]
+        return [brew + ["update"], brew + ["upgrade", "--cask", "gitswitcher"]]
     }
 
     func clearInstallError() {
